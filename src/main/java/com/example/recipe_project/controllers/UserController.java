@@ -1,5 +1,7 @@
 package com.example.recipe_project.controllers;
 
+import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
+import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import com.example.recipe_project.models.entity.raw.RawUser;
 import com.example.recipe_project.models.entity.entities.User;
@@ -54,5 +56,15 @@ public class UserController {
             @RequestParam(required = false) int pageSize
     ) {
         return userService.deleteUser(id, pageNumber, pageSize);
+    }
+
+    @GetMapping("/activity-types")
+    public ResponseEntity<List<ActivityType_DTO>> findAllActivityTypes() {
+        return userService.findAllActivityTypes();
+    }
+
+    @GetMapping("/genders")
+    public ResponseEntity<List<Gender_DTO>> findAllGenders() {
+        return userService.findAllGenders();
     }
 }

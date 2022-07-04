@@ -3,6 +3,8 @@ package com.example.recipe_project.services;
 import com.example.recipe_project.dao.IUserDAO;
 import com.example.recipe_project.dao.categories_dao.IActivityTypeDAO;
 import com.example.recipe_project.dao.categories_dao.IGenderDAO;
+import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
+import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import com.example.recipe_project.models.entity.entities.Rank;
 import com.example.recipe_project.models.entity.raw.RawUser;
@@ -181,5 +183,21 @@ public class UserService {
             return new ResponseEntity<>(userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent().stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<List<ActivityType_DTO>> findAllActivityTypes() {
+        return new ResponseEntity<>(activityTypeDAO
+                .findAll()
+                .stream()
+                .map(ActivityType_DTO::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<Gender_DTO>> findAllGenders() {
+        return new ResponseEntity<>(genderDAO
+                .findAll()
+                .stream()
+                .map(Gender_DTO::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 }
