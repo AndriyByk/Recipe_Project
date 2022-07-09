@@ -6,7 +6,6 @@ import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.raw.RawRecipe;
 import com.example.recipe_project.models.entity.entities.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -89,6 +88,8 @@ public class RecipeService {
             int pageSize
     ) throws IOException {
         if (recipe != null) {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.rea
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
 
             // збереження картинки
@@ -141,6 +142,8 @@ public class RecipeService {
 
             // зберегти РЕЦЕПТ
             recipeDAO.save(recipeForDB);
+
+
             return new ResponseEntity<>(recipeDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent().stream()
                     .map(Recipe_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
@@ -167,7 +170,8 @@ public class RecipeService {
             return new ResponseEntity<>(recipeDAO
                     .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
                     .stream()
-                    .map(Recipe_DTO::new).collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+                    .map(Recipe_DTO::new)
+                    .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }
     }
 
