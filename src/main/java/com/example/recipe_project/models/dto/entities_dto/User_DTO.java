@@ -16,11 +16,12 @@ public class User_DTO {
     private int id;
     private String login;
     private String password;
+    // фотка для відображення на фронті
     private String avatar;
     private String email;
     private int weight;
     private int height;
-    private int age;
+    private String dayOfBirth;
     private Gender_DTO genderDto;
     private ActivityType_DTO activityTypeDto;
     private String name;
@@ -29,13 +30,13 @@ public class User_DTO {
 
     public User_DTO(User user) {
         this.id = user.getId();
-        this.login = user.getLogin();
+        this.login = user.getUsername();
         this.password = user.getPassword();
         this.avatar = user.getAvatar();
         this.email = user.getEmail();
         this.weight = user.getWeight();
         this.height = user.getHeight();
-        this.age = user.getAge();
+        this.dayOfBirth = user.getDayOfBirth();
         this.genderDto = new Gender_DTO(user.getGender());
         this.activityTypeDto = new ActivityType_DTO(user.getActivityType());
         this.name = user.getName();

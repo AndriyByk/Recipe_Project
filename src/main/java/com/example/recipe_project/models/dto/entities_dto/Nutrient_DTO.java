@@ -15,6 +15,13 @@ public class Nutrient_DTO {
     private String name;
     private String about;
     private NutrientCategory_DTO categoryDto;
+    private double quantity;
+    public Nutrient_DTO(Nutrient nutrient, double quantity) {
+        this.name = nutrient.getName();
+        this.about = nutrient.getAbout();
+        this.categoryDto = new NutrientCategory_DTO(nutrient.getNutrientCategory());
+        this.quantity = quantity;
+    }
 
     public Nutrient_DTO(Nutrient nutrient) {
         this.name = nutrient.getName();

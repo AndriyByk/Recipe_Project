@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class Recipe_DTO {
+    private int id;
     private String image;
     private String title;
     private String description;
@@ -26,6 +27,7 @@ public class Recipe_DTO {
 
 
     public Recipe_DTO(Recipe recipe) {
+        this.id = recipe.getId();
         this.image = recipe.getImage();
         this.title = recipe.getTitle();
         this.description = recipe.getDescription();
@@ -47,8 +49,7 @@ public class Recipe_DTO {
                 .getNutrientQuantities()
                 .stream()
                 .map(quantity -> new NutrientQuantitiesInRecipe_DTO(
-                    new Nutrient_DTO(quantity.getNutrient()),
-                    quantity.getQuantity()))
+                    new Nutrient_DTO(quantity.getNutrient(), quantity.getQuantity())))
                 .collect(Collectors.toList());
     }
 }

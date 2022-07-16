@@ -88,8 +88,6 @@ public class RecipeService {
             int pageSize
     ) throws IOException {
         if (recipe != null) {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.rea
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
 
             // збереження картинки
@@ -104,7 +102,7 @@ public class RecipeService {
 
             // РЕЦЕПТ для бази
             Recipe recipeForDB = new Recipe(
-                    rawRecipe.getImage(),
+                    picture.getOriginalFilename(),
                     rawRecipe.getTitle(),
                     rawRecipe.getDescription(),
 //                    recipeWithRawIngredients.getRating(),

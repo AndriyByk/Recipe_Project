@@ -1,18 +1,21 @@
 package com.example.recipe_project.models.entity.entities;
 
+import com.example.recipe_project.models.entity.auth.AuthToken;
 import com.example.recipe_project.models.entity.categories.ActivityType;
 
 import com.example.recipe_project.models.entity.categories.Gender;
-import com.example.recipe_project.models.entity.entities.Rank;
-import com.example.recipe_project.models.entity.entities.Recipe;
+import com.example.recipe_project.models.entity.categories.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor
@@ -20,18 +23,23 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private int id;
 
-    private String login;
+    @Column(unique = true)
+    private String username;
     private String password;
     private String avatar;
     private String email;
     private int weight;
     private int height;
-    private int age;
+    private String dayOfBirth;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated
+    private List<Role> roles = Arrays.asList(Role.ROLE_USER);
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Gender gender;
@@ -56,14 +64,18 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Rank> ranks = new ArrayList<>();
 
-    public User(String login, String password, String avatar, String email, int weight, int height, int age, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
-        this.login = login;
+    // Token
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<AuthToken> authTokens = new HashSet<>();
+
+    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
+        this.username = username;
         this.password = password;
         this.avatar = avatar;
         this.email = email;
         this.weight = weight;
         this.height = height;
-        this.age = age;
+        this.dayOfBirth = dayOfBirth;
         this.gender = gender;
         this.activityType = activityType;
         this.name = name;
@@ -71,28 +83,14 @@ public class User {
         this.dateOfRegistration = dateOfRegistration;
     }
 
-    public User(String login,
-                String password,
-                String avatar,
-                String email,
-                int weight,
-                int height,
-                int age,
-                Gender gender,
-                ActivityType activityType,
-                String name,
-                String lastName,
-                String dateOfRegistration,
-                List<Recipe> favoriteRecipes,
-                List<Recipe> createdRecipes,
-                List<Rank> ranks) {
-        this.login = login;
+    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<Recipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks) {
+        this.username = username;
         this.password = password;
         this.avatar = avatar;
         this.email = email;
         this.weight = weight;
         this.height = height;
-        this.age = age;
+        this.dayOfBirth = dayOfBirth;
         this.gender = gender;
         this.activityType = activityType;
         this.name = name;
@@ -103,19 +101,44 @@ public class User {
         this.ranks = ranks;
     }
 
-    public User(int id, String login, String password, String avatar, String email, int weight, int height, int age, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
+    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.password = password;
         this.avatar = avatar;
         this.email = email;
         this.weight = weight;
         this.height = height;
-        this.age = age;
+        this.dayOfBirth = dayOfBirth;
         this.gender = gender;
         this.activityType = activityType;
         this.name = name;
         this.lastName = lastName;
         this.dateOfRegistration = dateOfRegistration;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

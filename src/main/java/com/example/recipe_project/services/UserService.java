@@ -15,6 +15,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +30,11 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
     private IUserDAO userDAO;
     private IGenderDAO genderDAO;
     private IActivityTypeDAO activityTypeDAO;
+    private PasswordEncoder passwordEncoder;
 
     public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
         List<User_DTO> allUsers_dto = userDAO
@@ -58,8 +63,8 @@ public class UserService {
             userFromDB.setEmail(user.getEmail());
         if (user.getWeight() != 0)
             userFromDB.setWeight(user.getWeight());
-        if (user.getAge() != 0)
-            userFromDB.setAge(user.getAge());
+        if (user.getDayOfBirth() != null)
+            userFromDB.setDayOfBirth(user.getDayOfBirth());
         if (user.getGender() != null)
             userFromDB.setGender(user.getGender());
         if (user.getActivityType() != null)
@@ -116,7 +121,7 @@ public class UserService {
                 user.getEmail() == null &&
                 user.getWeight() == 0 &&
                 user.getHeight() == 0 &&
-                user.getAge() == 0 &&
+                user.getDayOfBirth() == null &&
                 user.getGender() == null &&
                 user.getActivityType() == null &&
                 user.getLastName() == null &&
@@ -139,6 +144,7 @@ public class UserService {
         if (user != null) {
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);
 
+            // збереження картинки
             String path = System.getProperty("user.home") + File.separator + "Pictures" + File.separator;
             avatar.transferTo(new File(path + avatar.getOriginalFilename()));
 
@@ -147,13 +153,13 @@ public class UserService {
             List<Rank> ranks = new ArrayList<>();
 
             User userForDB = new User(
-                    rawUser.getLogin(),
-                    rawUser.getPassword(),
+                    rawUser.getUsername(),
+                    passwordEncoder.encode(rawUser.getPassword()),
                     avatar.getOriginalFilename(),
                     rawUser.getEmail(),
                     rawUser.getWeight(),
                     rawUser.getHeight(),
-                    rawUser.getAge(),
+                    rawUser.getDayOfBirth(),
                     genderDAO.findById(rawUser.getGenderId()).get(),
                     activityTypeDAO.findById(rawUser.getActivityTypeId()).get(),
                     rawUser.getName(),
@@ -164,6 +170,7 @@ public class UserService {
                     ranks
             );
             userDAO.save(userForDB);
+
             return new ResponseEntity<>(userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
                     .stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
@@ -199,5 +206,10 @@ public class UserService {
                 .stream()
                 .map(Gender_DTO::new)
                 .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userDAO.findByUsername(username);
     }
 }

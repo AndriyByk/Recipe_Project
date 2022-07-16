@@ -7,13 +7,13 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 public class RawUser {
-    private String login;
+    private String username;
     private String password;
-    private String avatar;
+//    private String avatar;
     private String email;
     private int weight;
     private int height;
-    private int age;
+    private String dayOfBirth;
     private String name;
     private String lastName;
     private String dateOfRegistration;

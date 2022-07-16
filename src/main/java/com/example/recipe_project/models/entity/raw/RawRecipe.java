@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class RawRecipe {
-    private String image;
+//    private String image;
     private String title;
     private String description;
     private int recipeCategoryId;

@@ -10,9 +10,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Gender_DTO {
+    private int id;
     private String gender;
 
     public Gender_DTO(Gender gender) {
+        this.id = gender.getId();
         this.gender = gender.getGender();
     }
 }

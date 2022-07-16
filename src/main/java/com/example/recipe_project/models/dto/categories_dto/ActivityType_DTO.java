@@ -11,10 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActivityType_DTO {
+    private int id;
     private String name;
     private String about;
 
     public ActivityType_DTO(ActivityType activityType) {
+        this.id = activityType.getId();
         this.name = activityType.getName();
         this.about = activityType.getAbout();
     }
