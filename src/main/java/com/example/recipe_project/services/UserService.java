@@ -141,7 +141,14 @@ public class UserService implements UserDetailsService {
             MultipartFile avatar,
             int pageNumber,
             int pageSize) throws IOException {
+        System.out.println(pageNumber);
+        System.out.println(pageSize);
+        System.out.println(avatar.getOriginalFilename());
         if (user != null) {
+            if (user instanceof String) {
+                System.out.println(user.getClass());
+            }
+
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);
 
             // збереження картинки

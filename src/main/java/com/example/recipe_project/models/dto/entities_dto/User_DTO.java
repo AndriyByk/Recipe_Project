@@ -14,7 +14,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(value = {"hibernateInitializer"})
 public class User_DTO {
     private int id;
-    private String login;
+    private String username;
     private String password;
     // фотка для відображення на фронті
     private String avatar;
@@ -30,7 +30,7 @@ public class User_DTO {
 
     public User_DTO(User user) {
         this.id = user.getId();
-        this.login = user.getUsername();
+        this.username = user.getUsername();
         this.password = user.getPassword();
         this.avatar = user.getAvatar();
         this.email = user.getEmail();
