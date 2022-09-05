@@ -3,7 +3,7 @@ package com.example.recipe_project.controllers;
 import com.example.recipe_project.models.dto.categories_dto.NutrientCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Nutrient_DTO;
 import com.example.recipe_project.models.entity.entities.Nutrient;
-import com.example.recipe_project.services.NutrientService;
+import com.example.recipe_project.services.entities.NutrientService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

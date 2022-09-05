@@ -1,11 +1,14 @@
 package com.example.recipe_project.models.entity.raw;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @AllArgsConstructor
+
 public class RawUser {
     private String username;
     private String password;
@@ -20,4 +23,5 @@ public class RawUser {
 
     private int activityTypeId;
     private int genderId;
+
 }

@@ -5,7 +5,7 @@ import com.example.recipe_project.models.dto.entities_dto.Ingredient_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.entities.Ingredient;
 import com.example.recipe_project.models.entity.raw.RawIngredient;
-import com.example.recipe_project.services.IngredientService;
+import com.example.recipe_project.services.entities.IngredientService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +19,17 @@ public class IngredientController {
     private IngredientService ingredientService;
 
     @GetMapping("")
-    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients(
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize
-    ) {
-        return ingredientService.findAllIngredients(pageNumber, pageSize);
+    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients() {
+        return ingredientService.findAllIngredients();
     }
+
+//    @GetMapping("")
+//    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients(
+//            @RequestParam(required = false) int pageNumber,
+//            @RequestParam(required = false) int pageSize
+//    ) {
+//        return ingredientService.findAllIngredientsWithPages(pageNumber, pageSize);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Ingredient_DTO> findIngredientById(@PathVariable int id) {

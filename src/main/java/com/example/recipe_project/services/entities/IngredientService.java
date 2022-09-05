@@ -1,7 +1,7 @@
-package com.example.recipe_project.services;
+package com.example.recipe_project.services.entities;
 
-import com.example.recipe_project.dao.IIngredientDAO;
-import com.example.recipe_project.dao.INutrientDAO;
+import com.example.recipe_project.dao.entities_dao.IIngredientDAO;
+import com.example.recipe_project.dao.entities_dao.INutrientDAO;
 import com.example.recipe_project.dao.categories_dao.IIngredientCategoryDAO;
 import com.example.recipe_project.models.dto.categories_dto.IngredientCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Ingredient_DTO;
@@ -28,10 +28,18 @@ public class IngredientService {
     private INutrientDAO nutrientDAO;
 
     // GET All
-    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients(int pageNumber,
-                                                                    int pageSize) {
+    public ResponseEntity<List<Ingredient_DTO>> findAllIngredientsWithPages(int pageNumber,
+                                                                            int pageSize) {
         return new ResponseEntity<>(ingredientDAO
                 .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+                .stream()
+                .map(Ingredient_DTO::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients() {
+        return new ResponseEntity<>(ingredientDAO
+                .findAll()
                 .stream()
                 .map(Ingredient_DTO::new)
                 .collect(Collectors.toList()), HttpStatus.OK);

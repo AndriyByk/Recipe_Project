@@ -15,9 +15,14 @@ public class AuthToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @Column(unique = true)
     private String token;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private User user;
+//    @ManyToOne(
+//            cascade = CascadeType.ALL
+//            , fetch = FetchType.EAGER
+//
+//    )
+//    private User user;
 }

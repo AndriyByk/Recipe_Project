@@ -1,6 +1,6 @@
-package com.example.recipe_project.services;
+package com.example.recipe_project.services.entities;
 
-import com.example.recipe_project.dao.INutrientDAO;
+import com.example.recipe_project.dao.entities_dao.INutrientDAO;
 import com.example.recipe_project.dao.categories_dao.INutrientCategoryDAO;
 import com.example.recipe_project.models.dto.categories_dto.NutrientCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Nutrient_DTO;

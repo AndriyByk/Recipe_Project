@@ -1,11 +1,14 @@
-package com.example.recipe_project.services;
+package com.example.recipe_project.services.entities;
 
-import com.example.recipe_project.dao.IUserDAO;
+import com.example.recipe_project.dao.entities_dao.IUserDAO;
 import com.example.recipe_project.dao.categories_dao.IActivityTypeDAO;
 import com.example.recipe_project.dao.categories_dao.IGenderDAO;
+import com.example.recipe_project.dao.tokens_dao.AuthTokenDAO;
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
+import com.example.recipe_project.models.dto.sign_in.UserAccessToken_DTO;
+import com.example.recipe_project.models.entity.auth.AuthToken;
 import com.example.recipe_project.models.entity.entities.Rank;
 import com.example.recipe_project.models.entity.raw.RawUser;
 import com.example.recipe_project.models.entity.entities.Recipe;
@@ -25,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ public class UserService implements UserDetailsService {
     private IGenderDAO genderDAO;
     private IActivityTypeDAO activityTypeDAO;
     private PasswordEncoder passwordEncoder;
+    private AuthTokenDAO authTokenDAO;
 
     public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
         List<User_DTO> allUsers_dto = userDAO
@@ -136,19 +141,9 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<List<User_DTO>> saveUser(
-            String user,
-            MultipartFile avatar,
-            int pageNumber,
-            int pageSize) throws IOException {
-        System.out.println(pageNumber);
-        System.out.println(pageSize);
-        System.out.println(avatar.getOriginalFilename());
-        if (user != null) {
-            if (user instanceof String) {
-                System.out.println(user.getClass());
-            }
+    public ResponseEntity<List<User_DTO>> saveUser(String user, MultipartFile avatar, int pageNumber, int pageSize) throws IOException {
 
+        if (user != null) {
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);
 
             // збереження картинки
@@ -161,6 +156,7 @@ public class UserService implements UserDetailsService {
 
             User userForDB = new User(
                     rawUser.getUsername(),
+                    // закодовка пароля
                     passwordEncoder.encode(rawUser.getPassword()),
                     avatar.getOriginalFilename(),
                     rawUser.getEmail(),
@@ -174,7 +170,8 @@ public class UserService implements UserDetailsService {
                     rawUser.getDateOfRegistration(),
                     favoriteRecipes,
                     createdRecipes,
-                    ranks
+                    ranks,
+                    new HashSet<>()
             );
             userDAO.save(userForDB);
 
@@ -186,6 +183,10 @@ public class UserService implements UserDetailsService {
                     .stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public void saveUser(User user) {
+        userDAO.save(user);
     }
 
     public ResponseEntity<List<User_DTO>> deleteUser(int id, int pageNumber, int pageSize) {
@@ -219,4 +220,35 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userDAO.findByUsername(username);
     }
+
+    public User findByName(String name) {
+        return userDAO.findByUsername(name);
+    }
+
+    public ResponseEntity<User_DTO> findByUsername(String name) {
+        return new ResponseEntity<>(new User_DTO(userDAO.findByUsername(name)), HttpStatus.OK);
+    }
+
+//    public UserAccessToken_DTO signIn(String name) {
+        // я не можу (не вмію) витягти на клієнті беарер з хедера респонсу, тому мушу беарер передавати в боді респонсу.
+        // реалізація:
+        // ---1--- на клієнті у формі передаю в урлі post-запиту username
+//        System.out.println("UserService " + name);
+        // ---2---- шукаю в базі юзера по юзернейму
+//        User user = userDAO.findByUsername(name);
+//        System.out.println("UserService " + user);
+        // ---3--- шукаю в базі токен по юзеру
+        ///////////////////////////////////////////////////////////////////
+//        AuthToken authToken = authTokenDAO.findAuthTokenByUser(user); /////
+        ///////////////////////////////////////////////////////////////////
+//        System.out.println("UserService " + authToken);
+        // повертаю (токен з беарером)
+//        if(authToken != null) {
+//            String token = authToken.getToken();
+//            return new UserAccessToken_DTO(token);
+//        } else {
+            // якшо не знаходить токена - має бути якийсь ерор!!!, поки шо стоїть заглушка
+//            return new UserAccessToken_DTO("bla-bla");
+//        }
+//    }
 }

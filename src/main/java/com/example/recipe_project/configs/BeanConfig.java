@@ -20,11 +20,12 @@ public class BeanConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // ---4---
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         // з яких серверів можна робити запити на бек
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:3000"));
         // доступні всі хедери
         corsConfiguration.addAllowedHeader("*");
         // якими методами можемо робити запити
@@ -32,20 +33,28 @@ public class BeanConfig {
                 HttpMethod.GET.name(),
                 HttpMethod.PATCH.name(),
                 HttpMethod.POST.name(),
-                HttpMethod.DELETE.name()
+                HttpMethod.DELETE.name(),
+                HttpMethod.HEAD.name()
         ));
         // які додаткові хедери будуть видимі клієнту
         corsConfiguration.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        "/**" - будь яка урла
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
 
+    // ---2---
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        // знаходить юзера по юзернейму
         authenticationProvider.setUserDetailsService(userDetailsService);
+        // відбувається дешифровка паролю з бази даних - зашифровку дивитись в UserService
+        // перевіряє його пароль
         authenticationProvider.setPasswordEncoder(passwordEncoder);
+        // + відбувається перевірка ролей
         return authenticationProvider;
     }
 }

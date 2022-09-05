@@ -1,7 +1,9 @@
-package com.example.recipe_project.services;
+package com.example.recipe_project.services.entities;
 
-import com.example.recipe_project.dao.*;
 import com.example.recipe_project.dao.categories_dao.IRecipeCategoryDAO;
+import com.example.recipe_project.dao.entities_dao.IIngredientDAO;
+import com.example.recipe_project.dao.entities_dao.IRecipeDAO;
+import com.example.recipe_project.dao.mediate_dao.IQuantityDAO;
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.raw.RawRecipe;

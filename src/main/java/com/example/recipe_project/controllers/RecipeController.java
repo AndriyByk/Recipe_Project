@@ -2,16 +2,15 @@ package com.example.recipe_project.controllers;
 
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
-import com.example.recipe_project.models.entity.raw.RawRecipe;
 import com.example.recipe_project.models.entity.entities.Recipe;
-import com.example.recipe_project.services.RecipeService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.recipe_project.services.entities.RecipeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -45,11 +44,13 @@ public class RecipeController {
 
     @PostMapping("")
     public ResponseEntity<List<Recipe_DTO>> saveRecipe(
+            Principal principal,
             @RequestParam String recipe,
             @RequestParam(required = false) int pageNumber,
             @RequestParam(required = false) int pageSize,
             @RequestParam(required = false) MultipartFile picture
     ) throws IOException {
+        System.out.println(principal.getName());
         return recipeService.saveRecipe(recipe, picture, pageNumber, pageSize);
     }
 

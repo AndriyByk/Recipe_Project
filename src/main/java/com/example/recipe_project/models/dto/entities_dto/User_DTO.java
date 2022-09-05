@@ -27,6 +27,9 @@ public class User_DTO {
     private String name;
     private String lastName;
     private String dateOfRegistration;
+    private Recipe_DTO[] favorite_recipes;
+    private Recipe_DTO[] created_recipes;
+
 
     public User_DTO(User user) {
         this.id = user.getId();
