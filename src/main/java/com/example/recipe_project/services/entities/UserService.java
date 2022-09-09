@@ -253,6 +253,7 @@ public class UserService implements UserDetailsService {
             if (new File(pathOfUserDir).mkdir()) {
                 avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
             }
+
             User userForDB = new User(
                     rawUser.getUsername(),
                     // закодовка пароля

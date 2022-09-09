@@ -92,19 +92,31 @@ public class RecipeService {
     ) throws IOException {
         if (recipe != null) {
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
-            System.out.println(recipe);
-            System.out.println(username);
+
             // збереження картинки
-            String path = System.getProperty("user.home") + File.separator + "Pictures" + File.separator;
-            picture.transferTo(new File(path + picture.getOriginalFilename()));
+            String path = System.getProperty("user.home") + File.separator
+                    + "IdeaProjects" + File.separator
+                    + "Recipe_Project" + File.separator
+                    + "src" + File.separator
+                    + "main" + File.separator
+                    + "java" + File.separator
+                    + "com" + File.separator
+                    + "example" + File.separator
+                    + "recipe_project" + File.separator
+                    + "pictures" + File.separator
+                    + "recipes" + File.separator;
+
+            String pathOfRecipeDir = path + rawRecipe.getTitle();
+
+            if (new File(pathOfRecipeDir).mkdir()) {
+                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
+            }
 
             // пусті листи для:
             // 1) кількості нутрієнтів в рецепті
             // 2) для ваги
             List<NutrientQuantityInRecipe> nutrientQuantities = new ArrayList<>();
             List<Weight> weights = new ArrayList<>();
-
-
 
             // зберегти рецепт в ЮЗЕРА
             User user = userDAO.findByUsername(username);

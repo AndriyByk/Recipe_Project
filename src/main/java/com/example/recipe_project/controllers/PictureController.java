@@ -11,8 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class PictureController {
     private PictureService pictureService;
 
-    @GetMapping("/avatar/{id}")
-    public String getUserAvatar(@PathVariable int id) {
-        return pictureService.getUserAvatar(id);
-    }
+//    @GetMapping("/avatar/{id}")
+//    public String getUserAvatar(@PathVariable int id) {
+//        return pictureService.getUserAvatar(id);
+//    }
+//
+//    @GetMapping("/avatar/{id}")
+//    public String getRecipePicture(@PathVariable int id) {
+//        return pictureService.getRecipePicture(id);
+//    }
 }

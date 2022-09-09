@@ -21,9 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
                 + "com" + File.separator
                 + "example" + File.separator
                 + "recipe_project" + File.separator
-                + "pictures" + File.separator
-                + "users" + File.separator;
-        // урла запиту з фронта, де ** значать назву картинки
-        registry.addResourceHandler("/pictures/**").addResourceLocations(path);
+                + "pictures" + File.separator;
+        // урла запиту з фронта, де ** значать назву картинки (картинки можуть бути і в підпапках)
+        registry.addResourceHandler("/pictures/**").addResourceLocations(
+                path + "users" + File.separator,
+                path + "recipes" + File.separator
+        );
     }
 }
