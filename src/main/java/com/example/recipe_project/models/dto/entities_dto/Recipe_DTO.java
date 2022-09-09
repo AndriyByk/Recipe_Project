@@ -31,7 +31,7 @@ public class Recipe_DTO {
         this.image = recipe.getImage();
         this.title = recipe.getTitle();
         this.description = recipe.getDescription();
-        this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getRecipeCategory());
+        this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getCategory());
         //        this.rating = recipe.getRating();
         this.ingredients = recipe
                 .getWeights()

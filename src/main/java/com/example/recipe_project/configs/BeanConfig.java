@@ -38,6 +38,7 @@ public class BeanConfig {
         ));
         // які додаткові хедери будуть видимі клієнту
         corsConfiguration.addExposedHeader("Authorization");
+        corsConfiguration.addExposedHeader("Error");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //        "/**" - будь яка урла
         source.registerCorsConfiguration("/**", corsConfiguration);

@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -55,8 +52,7 @@ public class MainController {
     ) {
         System.out.println(access);
         String bearer = access.replace("Bearer ", "");
-        System.out.println(bearer);
-        tokenService.deleteAuthTokenByUser_Username(bearer);
+        tokenService.deleteAuthTokenByToken(bearer);
         return new AuthToken();
     }
 

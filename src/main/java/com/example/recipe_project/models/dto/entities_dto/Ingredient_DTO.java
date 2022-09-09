@@ -13,12 +13,14 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 public class Ingredient_DTO {
+    private int id;
     private String name;
     private String about;
     private IngredientCategory_DTO ingredientCategoryDto;
     private List<Quantity_DTO> quantitiesDto;
 
     public Ingredient_DTO(Ingredient ingredient) {
+        this.id = ingredient.getId();
         this.name = ingredient.getName();
         this.about = ingredient.getAbout();
         this.ingredientCategoryDto = new IngredientCategory_DTO(ingredient.getIngredientCategory());

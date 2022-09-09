@@ -1,7 +1,5 @@
 package com.example.recipe_project.models.entity.entities;
 
-import com.example.recipe_project.models.entity.entities.Ingredient;
-import com.example.recipe_project.models.entity.entities.Recipe;
 import com.example.recipe_project.models.entity.ids.WeightId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

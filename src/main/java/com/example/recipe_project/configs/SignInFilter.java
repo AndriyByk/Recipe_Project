@@ -10,6 +10,7 @@ import com.example.recipe_project.services.entities.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -50,11 +51,15 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
             System.out.println("SignInFilter " + userSignIn_dto.getUsername());
             System.out.println("SignInFilter " + userSignIn_dto.getPassword());
             // співставленння з даними в базі даних
-            return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
-                    userSignIn_dto.getUsername(),
-                    userSignIn_dto.getPassword()
-                    /*, userSignIn_dto.getRoles()*/
-            ));
+            try {
+                return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
+                        userSignIn_dto.getUsername(),
+                        userSignIn_dto.getPassword()
+                        /*, userSignIn_dto.getRoles()*/
+                ));
+            } catch (InternalAuthenticationServiceException e){
+                response.addHeader("Error", "No such user in database");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("errrrrrorrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
@@ -72,18 +77,12 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
     ) throws IOException, ServletException {
         User userByName = userService.findByName(authResult.getName());
         String jwtsToken = tokenBuilderService.createToken(authResult);
-        //
+
         AuthToken authToken = new AuthToken();
         authToken.setToken(jwtsToken);
-       ///////////////////////////////////////////
-//        authToken.setUser(userByName); //////////// добавляється юзер в табл токенів
-       ///////////////////////////////////////////
-        System.out.println("Auth is done");
-        System.out.println("SignInFilter " + authToken.getToken());
-        /////
         userByName.getAuthTokens().add(authToken);
         userService.saveUser(userByName);
-        /////
+
         response.addHeader("Authorization", "Bearer " + jwtsToken);
         chain.doFilter(request, response);
     }

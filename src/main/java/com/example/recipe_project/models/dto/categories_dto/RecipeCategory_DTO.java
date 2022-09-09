@@ -11,9 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeCategory_DTO {
+    private int id;
     private String name;
 
     public RecipeCategory_DTO(RecipeCategory category) {
+        this.id = category.getId();
         this.name = category.getName();
     }
 }

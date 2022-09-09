@@ -39,7 +39,7 @@ public class User implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated
-//    @Enumerated(EnumType.STRING)
+    //  @Enumerated(EnumType.STRING)
     private List<Role> roles = Arrays.asList(Role.ROLE_USER);
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -53,43 +53,58 @@ public class User implements UserDetails {
     private String dateOfRegistration;
 
     // Lists
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "favorite_recipes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "recipe_id"))
-    private List<Recipe> favoriteRecipes;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "created_recipes", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "recipe_id"))
-    private List<Recipe> createdRecipes;
+//    @ManyToMany/*(cascade = CascadeType.ALL)/*, fetch = FetchType.LAZY)*/
+//    @JoinTable(name = "favorite_recipes",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+//    private List<Recipe> favoriteRecipes = new ArrayList<>();
+
+    // колишній мені ту мені
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "user",
+            orphanRemoval = true)
+    private List<FavoriteRecipe> favoriteRecipes;
+
+    // з додатковою табличкою
+//    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+//    @JoinTable(name = "created_recipes",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "recipe_id"))
+//    private List<Recipe> createdRecipes = new ArrayList<>();
+    // без додаткової таблички
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+//    @JoinColumn(name = "author_id")
+
+    private List<Recipe> createdRecipes = new ArrayList<>();
 
     // Rank
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Rank> ranks = new ArrayList<>();
 
-//     Token
+    // Token
     @OneToMany(
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
-//            , orphanRemoval = true
-//            , mappedBy = "user"
     )
     private Set<AuthToken> authTokens = new HashSet<>();
 
-    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
-        this.username = username;
-        this.password = password;
-        this.avatar = avatar;
-        this.email = email;
-        this.weight = weight;
-        this.height = height;
-        this.dayOfBirth = dayOfBirth;
-        this.gender = gender;
-        this.activityType = activityType;
-        this.name = name;
-        this.lastName = lastName;
-        this.dateOfRegistration = dateOfRegistration;
-    }
+//    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
+//        this.username = username;
+//        this.password = password;
+//        this.avatar = avatar;
+//        this.email = email;
+//        this.weight = weight;
+//        this.height = height;
+//        this.dayOfBirth = dayOfBirth;
+//        this.gender = gender;
+//        this.activityType = activityType;
+//        this.name = name;
+//        this.lastName = lastName;
+//        this.dateOfRegistration = dateOfRegistration;
+//    }
 
-    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<Recipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens) {
+    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens) {
         this.username = username;
         this.password = password;
         this.avatar = avatar;
@@ -108,38 +123,38 @@ public class User implements UserDetails {
         this.authTokens = authTokens;
     }
 
-    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, HashSet<AuthToken> authTokens) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.avatar = avatar;
-        this.email = email;
-        this.weight = weight;
-        this.height = height;
-        this.dayOfBirth = dayOfBirth;
-        this.gender = gender;
-        this.activityType = activityType;
-        this.name = name;
-        this.lastName = lastName;
-        this.dateOfRegistration = dateOfRegistration;
-        this.authTokens = authTokens;
-    }
+//    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, HashSet<AuthToken> authTokens) {
+//        this.id = id;
+//        this.username = username;
+//        this.password = password;
+//        this.avatar = avatar;
+//        this.email = email;
+//        this.weight = weight;
+//        this.height = height;
+//        this.dayOfBirth = dayOfBirth;
+//        this.gender = gender;
+//        this.activityType = activityType;
+//        this.name = name;
+//        this.lastName = lastName;
+//        this.dateOfRegistration = dateOfRegistration;
+//        this.authTokens = authTokens;
+//    }
 
-    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.avatar = avatar;
-        this.email = email;
-        this.weight = weight;
-        this.height = height;
-        this.dayOfBirth = dayOfBirth;
-        this.gender = gender;
-        this.activityType = activityType;
-        this.name = name;
-        this.lastName = lastName;
-        this.dateOfRegistration = dateOfRegistration;
-    }
+//    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
+//        this.id = id;
+//        this.username = username;
+//        this.password = password;
+//        this.avatar = avatar;
+//        this.email = email;
+//        this.weight = weight;
+//        this.height = height;
+//        this.dayOfBirth = dayOfBirth;
+//        this.gender = gender;
+//        this.activityType = activityType;
+//        this.name = name;
+//        this.lastName = lastName;
+//        this.dateOfRegistration = dateOfRegistration;
+//    }
 
     // перевірка ролей під час логінації
     // віддає список ролей того чи іншого користувача

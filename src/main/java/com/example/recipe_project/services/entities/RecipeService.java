@@ -3,6 +3,7 @@ package com.example.recipe_project.services.entities;
 import com.example.recipe_project.dao.categories_dao.IRecipeCategoryDAO;
 import com.example.recipe_project.dao.entities_dao.IIngredientDAO;
 import com.example.recipe_project.dao.entities_dao.IRecipeDAO;
+import com.example.recipe_project.dao.entities_dao.IUserDAO;
 import com.example.recipe_project.dao.mediate_dao.IQuantityDAO;
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
@@ -32,6 +33,7 @@ public class RecipeService {
     private IIngredientDAO ingredientDAO;
     private IRecipeCategoryDAO recipeCategoryDAO;
     private IQuantityDAO quantityDAO;
+    private IUserDAO userDAO;
 
     // GET All recipes
     public ResponseEntity<List<Recipe_DTO>> findAllRecipes(int pageNumber, int pageSize) {
@@ -63,8 +65,8 @@ public class RecipeService {
             recipeFromDB.setImage(recipe.getImage());
         if (recipe.getDescription() != null)
             recipeFromDB.setDescription(recipe.getDescription());
-        if (recipe.getRecipeCategory() != null)
-            recipeFromDB.setRecipeCategory(recipe.getRecipeCategory());
+        if (recipe.getCategory() != null)
+            recipeFromDB.setCategory(recipe.getCategory());
 //        if (recipe.getRating() != 0)
 //            recipeFromDB.setRating(recipe.getRating());
         if (recipe.getWeights() != null && recipe.getWeights().size() != 0)
@@ -73,7 +75,7 @@ public class RecipeService {
                 recipe.getImage() == null &&
                 recipe.getDescription() == null &&
                 recipe.getWeights() == null &&
-                recipe.getRecipeCategory() == null) {
+                recipe.getCategory() == null) {
 //               && recipe.getRating() == 0
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
@@ -86,12 +88,12 @@ public class RecipeService {
     public ResponseEntity<List<Recipe_DTO>> saveRecipe(
             String recipe,
             MultipartFile picture,
-            int pageNumber,
-            int pageSize
+            String username
     ) throws IOException {
         if (recipe != null) {
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
-
+            System.out.println(recipe);
+            System.out.println(username);
             // збереження картинки
             String path = System.getProperty("user.home") + File.separator + "Pictures" + File.separator;
             picture.transferTo(new File(path + picture.getOriginalFilename()));
@@ -102,6 +104,11 @@ public class RecipeService {
             List<NutrientQuantityInRecipe> nutrientQuantities = new ArrayList<>();
             List<Weight> weights = new ArrayList<>();
 
+
+
+            // зберегти рецепт в ЮЗЕРА
+            User user = userDAO.findByUsername(username);
+
             // РЕЦЕПТ для бази
             Recipe recipeForDB = new Recipe(
                     picture.getOriginalFilename(),
@@ -110,6 +117,7 @@ public class RecipeService {
 //                    recipeWithRawIngredients.getRating(),
                     recipeCategoryDAO.findById(rawRecipe.getRecipeCategoryId()).get(),
                     weights,
+                    user,
                     nutrientQuantities);
 
             // допоміжна мапа для зручності (для нутрієнтів в рецепті)
@@ -143,12 +151,27 @@ public class RecipeService {
             // зберегти РЕЦЕПТ
             recipeDAO.save(recipeForDB);
 
+//            Recipe recipeByTitle = recipeDAO.findByTitle(recipeForDB.getTitle());
+//            user.getCreatedRecipes().add(recipeByTitle);
+//            userDAO.save(user);
+            ///////////////////
+//            recipeDAO.save(recipeForDB);
+//
+//            User user = userDAO.findByUsername(username);
+//            Recipe recipeByTitle = recipeDAO.findByTitle(recipeForDB.getTitle());
+//
+//            user.getCreatedRecipes().add(recipeByTitle);
+//            recipeByTitle.setUser(user);
+//
+//            recipeDAO.save(recipeByTitle);
+//            userDAO.save(user);
+            ///////////////
 
-            return new ResponseEntity<>(recipeDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent().stream()
+            return new ResponseEntity<>(recipeDAO.findAll().stream()
                     .map(Recipe_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(recipeDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent().stream()
+            return new ResponseEntity<>(recipeDAO.findAll().stream()
                     .map(Recipe_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }

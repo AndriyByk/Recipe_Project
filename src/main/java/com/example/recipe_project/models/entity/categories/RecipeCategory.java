@@ -22,7 +22,6 @@ public class RecipeCategory {
     private int id;
     @Column(name = "name")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "category")
     private List<Recipe> recipes;
 }

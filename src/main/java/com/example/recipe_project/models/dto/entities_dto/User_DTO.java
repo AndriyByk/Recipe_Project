@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -27,8 +30,8 @@ public class User_DTO {
     private String name;
     private String lastName;
     private String dateOfRegistration;
-    private Recipe_DTO[] favorite_recipes;
-    private Recipe_DTO[] created_recipes;
+    private List<Recipe_DTO> favoriteRecipes;
+    private List<Recipe_DTO> createdRecipes;
 
 
     public User_DTO(User user) {
@@ -45,5 +48,17 @@ public class User_DTO {
         this.name = user.getName();
         this.lastName = user.getLastName();
         this.dateOfRegistration = user.getDateOfRegistration();
+        this.favoriteRecipes = user
+                .getFavoriteRecipes()
+                .stream()
+                .map(favoriteRecipe -> new Recipe_DTO(
+                        favoriteRecipe.getRecipe()
+                )).collect(Collectors.toList());
+        this.createdRecipes = user
+                .getCreatedRecipes()
+                .stream()
+                .map(Recipe_DTO::new)
+                .collect(Collectors.toList());
+
     }
 }

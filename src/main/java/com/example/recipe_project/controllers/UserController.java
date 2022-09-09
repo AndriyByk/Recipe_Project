@@ -30,10 +30,22 @@ public class UserController {
         return userService.findUserById(id);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<User_DTO> updateUser(@PathVariable int id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
+//        return userService.updateUserById(id, user);
+//    }
+
+//    @PatchMapping("/{username}")
+//    public ResponseEntity<User_DTO> updateUserByUsername(@PathVariable String username, @RequestBody User user) {
+//        return userService.updateUserByUsername(username, user);
+//    }
+
+    @PatchMapping("/update/{username}")
+    public ResponseEntity<User_DTO> updateFavoriteRecipes(@PathVariable String username, @RequestBody String recipeId) {
+        return userService.updateFavoriteRecipes(username, recipeId);
     }
+
 
     // POST див. на MainController "/sign-up"
 //    @PostMapping("")
@@ -48,11 +60,9 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<List<User_DTO>> deleteUser(
-            @PathVariable int id,
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize
+            @PathVariable int id
     ) {
-        return userService.deleteUser(id, pageNumber, pageSize);
+        return userService.deleteUser(id);
     }
 
     @GetMapping("/activity-types")

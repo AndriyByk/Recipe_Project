@@ -6,7 +6,6 @@ import com.example.recipe_project.models.entity.auth.AuthToken;
 import com.example.recipe_project.models.entity.entities.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,7 @@ import java.util.Set;
 public class TokenService {
     private AuthTokenDAO authTokenDAO;
     private IUserDAO userDAO;
-    public void deleteAuthTokenByUser_Username(String access) {
+    public void deleteAuthTokenByToken(String access) {
         Set<AuthToken> authTokens = new HashSet<>();
         AuthToken token = authTokenDAO.findAuthTokenByToken(access);
         authTokens.add(token);

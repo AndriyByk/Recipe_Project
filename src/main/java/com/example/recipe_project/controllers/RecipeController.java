@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -42,16 +41,14 @@ public class RecipeController {
         return recipeService.updateRecipe(id, recipe);
     }
 
-    @PostMapping("")
+    @PostMapping("/{username}")
     public ResponseEntity<List<Recipe_DTO>> saveRecipe(
-            Principal principal,
             @RequestParam String recipe,
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize,
+            @PathVariable String username,
             @RequestParam(required = false) MultipartFile picture
     ) throws IOException {
-        System.out.println(principal.getName());
-        return recipeService.saveRecipe(recipe, picture, pageNumber, pageSize);
+
+        return recipeService.saveRecipe(recipe, picture, username);
     }
 
     @DeleteMapping("/{id}")
