@@ -1,4 +1,4 @@
-package com.example.recipe_project.models.entity.categories;
+package com.example.recipe_project.models.entity.categories.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

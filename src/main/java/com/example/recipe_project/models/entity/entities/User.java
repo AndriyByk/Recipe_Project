@@ -1,9 +1,9 @@
 package com.example.recipe_project.models.entity.entities;
 
 import com.example.recipe_project.models.entity.auth.AuthToken;
-import com.example.recipe_project.models.entity.categories.ActivityType;
+import com.example.recipe_project.models.entity.categories.user.ActivityType;
 
-import com.example.recipe_project.models.entity.categories.Gender;
+import com.example.recipe_project.models.entity.categories.user.Gender;
 import com.example.recipe_project.models.entity.categories.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +52,9 @@ public class User implements UserDetails {
     private String lastName;
     private String dateOfRegistration;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserNorm> norms;
+
     // Lists
 
 //    @ManyToMany/*(cascade = CascadeType.ALL)/*, fetch = FetchType.LAZY)*/
@@ -72,10 +75,9 @@ public class User implements UserDetails {
 //            joinColumns = @JoinColumn(name = "user_id"),
 //            inverseJoinColumns = @JoinColumn(name = "recipe_id"))
 //    private List<Recipe> createdRecipes = new ArrayList<>();
+
     // без додаткової таблички
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
-//    @JoinColumn(name = "author_id")
-
     private List<Recipe> createdRecipes = new ArrayList<>();
 
     // Rank
@@ -121,6 +123,26 @@ public class User implements UserDetails {
         this.createdRecipes = createdRecipes;
         this.ranks = ranks;
         this.authTokens = authTokens;
+    }
+
+    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens, HashSet<UserNorm> norms) {
+        this.username = username;
+        this.password = password;
+        this.avatar = avatar;
+        this.email = email;
+        this.weight = weight;
+        this.height = height;
+        this.dayOfBirth = dayOfBirth;
+        this.gender = gender;
+        this.activityType = activityType;
+        this.name = name;
+        this.lastName = lastName;
+        this.dateOfRegistration = dateOfRegistration;
+        this.favoriteRecipes = favoriteRecipes;
+        this.createdRecipes = createdRecipes;
+        this.ranks = ranks;
+        this.authTokens = authTokens;
+        this.norms = norms;
     }
 
 //    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, HashSet<AuthToken> authTokens) {

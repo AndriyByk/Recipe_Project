@@ -24,6 +24,7 @@ public class Recipe_DTO {
 //    private double rating;
     private List<Weight_DTO> ingredients;
     private List<NutrientQuantitiesInRecipe_DTO> quantities;
+    private UserAuthor_DTO author;
 
 
     public Recipe_DTO(Recipe recipe) {
@@ -33,6 +34,7 @@ public class Recipe_DTO {
         this.description = recipe.getDescription();
         this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getCategory());
         //        this.rating = recipe.getRating();
+        this.author = new UserAuthor_DTO(recipe.getAuthor());
         this.ingredients = recipe
                 .getWeights()
                 .stream()

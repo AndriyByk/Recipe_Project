@@ -1,7 +1,6 @@
 package com.example.recipe_project.models.dto.categories_dto;
 
-import com.example.recipe_project.models.entity.categories.Gender;
-import lombok.AllArgsConstructor;
+import com.example.recipe_project.models.entity.categories.user.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

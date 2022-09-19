@@ -1,6 +1,6 @@
 package com.example.recipe_project.models.dto.categories_dto;
 
-import com.example.recipe_project.models.entity.categories.ActivityType;
+import com.example.recipe_project.models.entity.categories.user.ActivityType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

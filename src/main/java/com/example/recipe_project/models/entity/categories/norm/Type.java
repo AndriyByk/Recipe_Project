@@ -1,4 +1,4 @@
-package com.example.recipe_project.models.entity.categories;
+package com.example.recipe_project.models.entity.categories.norm;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,14 +12,11 @@ import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
-@Table(name = "activity_types")
-public class ActivityType {
+@Table(name = "types")
+public class Type {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
     private int id;
-    @Column(name = "name")
     private String name;
-    @Column(name = "about")
     private String about;
 }

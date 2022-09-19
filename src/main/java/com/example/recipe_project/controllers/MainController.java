@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MainController {
     private UserService userService;
-
     private TokenService tokenService;
 
     @GetMapping("/")

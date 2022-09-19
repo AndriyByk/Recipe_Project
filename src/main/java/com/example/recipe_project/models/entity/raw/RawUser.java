@@ -12,7 +12,6 @@ import lombok.*;
 public class RawUser {
     private String username;
     private String password;
-//    private String avatar;
     private String email;
     private int weight;
     private int height;

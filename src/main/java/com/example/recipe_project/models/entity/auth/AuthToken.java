@@ -18,11 +18,4 @@ public class AuthToken {
 
     @Column(unique = true)
     private String token;
-
-//    @ManyToOne(
-//            cascade = CascadeType.ALL
-//            , fetch = FetchType.EAGER
-//
-//    )
-//    private User user;
 }

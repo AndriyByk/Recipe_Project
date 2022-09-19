@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+//@RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
     private UserService userService;
 
-    @GetMapping("")
+    @GetMapping("/users")
     public ResponseEntity<List<User_DTO>> findAllUsers(
             @RequestParam(required = false) int pageNumber,
             @RequestParam(required = false) int pageSize
@@ -25,9 +25,14 @@ public class UserController {
         return userService.findAllUsers(pageNumber, pageSize);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<User_DTO> findUserById(@PathVariable int id) {
         return userService.findUserById(id);
+    }
+
+    @PatchMapping("/users/{username}")
+    public ResponseEntity<User_DTO> calculateNorms(@PathVariable String username, @RequestBody User user) {
+        return userService.calculateNorms(username, user);
     }
 
     //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
@@ -41,7 +46,7 @@ public class UserController {
 //        return userService.updateUserByUsername(username, user);
 //    }
 
-    @PatchMapping("/update/{username}")
+    @PatchMapping("/users/update/{username}")
     public ResponseEntity<User_DTO> updateFavoriteRecipes(@PathVariable String username, @RequestBody String recipeId) {
         return userService.updateFavoriteRecipes(username, recipeId);
     }
@@ -58,19 +63,19 @@ public class UserController {
 //        return userService.saveUser(user, avatar, pageNumber, pageSize);
 //    }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<List<User_DTO>> deleteUser(
             @PathVariable int id
     ) {
         return userService.deleteUser(id);
     }
 
-    @GetMapping("/activity-types")
+    @GetMapping("/users/activity-types")
     public ResponseEntity<List<ActivityType_DTO>> findAllActivityTypes() {
         return userService.findAllActivityTypes();
     }
 
-    @GetMapping("/genders")
+    @GetMapping("/users/genders")
     public ResponseEntity<List<Gender_DTO>> findAllGenders() {
         return userService.findAllGenders();
     }

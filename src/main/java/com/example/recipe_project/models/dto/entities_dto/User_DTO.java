@@ -2,6 +2,7 @@ package com.example.recipe_project.models.dto.entities_dto;
 
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
+import com.example.recipe_project.models.dto.mediate_dto.UserNorm_DTO;
 import com.example.recipe_project.models.entity.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class User_DTO {
     private List<Recipe_DTO> favoriteRecipes;
     private List<Recipe_DTO> createdRecipes;
 
+    private List<UserNorm_DTO> userNorms;
+
 
     public User_DTO(User user) {
         this.id = user.getId();
@@ -59,6 +62,9 @@ public class User_DTO {
                 .stream()
                 .map(Recipe_DTO::new)
                 .collect(Collectors.toList());
-
+        this.userNorms = user.getNorms()
+                .stream()
+                .map(userNorm -> new UserNorm_DTO(userNorm.getNutrient().getName(), userNorm.getQuantity()))
+                .collect(Collectors.toList());
     }
 }

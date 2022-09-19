@@ -1,5 +1,7 @@
 package com.example.recipe_project.services.entities;
 
+import com.example.recipe_project.dao.categories_dao.ITypeDAO;
+import com.example.recipe_project.dao.entities_dao.INormDAO;
 import com.example.recipe_project.dao.entities_dao.IRecipeDAO;
 import com.example.recipe_project.dao.entities_dao.IUserDAO;
 import com.example.recipe_project.dao.categories_dao.IActivityTypeDAO;
@@ -8,10 +10,10 @@ import com.example.recipe_project.dao.mediate_dao.IFavoriteRecipeDAO;
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
-import com.example.recipe_project.models.entity.entities.FavoriteRecipe;
+import com.example.recipe_project.models.entity.categories.norm.Type;
+import com.example.recipe_project.models.entity.entities.*;
+import com.example.recipe_project.models.entity.ids.UserNormId;
 import com.example.recipe_project.models.entity.raw.RawUser;
-import com.example.recipe_project.models.entity.entities.Recipe;
-import com.example.recipe_project.models.entity.entities.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -40,8 +44,9 @@ public class UserService implements UserDetailsService {
     private IActivityTypeDAO activityTypeDAO;
     private PasswordEncoder passwordEncoder;
     private IFavoriteRecipeDAO favoriteRecipeDAO;
-
     private IRecipeDAO recipeDAO;
+    private INormDAO normDAO;
+    private ITypeDAO typeDAO;
 
     public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
         List<User_DTO> allUsers_dto = userDAO
@@ -254,6 +259,7 @@ public class UserService implements UserDetailsService {
                 avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
             }
 
+
             User userForDB = new User(
                     rawUser.getUsername(),
                     // закодовка пароля
@@ -271,10 +277,130 @@ public class UserService implements UserDetailsService {
                     new ArrayList<>(),
                     new ArrayList<>(),
                     new ArrayList<>(),
+                    new HashSet<>(),
                     new HashSet<>()
             );
+
+
             userDAO.save(userForDB);
 
+//            User userek = userDAO.findByUsername(rawUser.getUsername());
+//
+//            // age
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//            LocalDate date1 = LocalDate.parse(rawUser.getDayOfBirth(), formatter);
+//            LocalDate dateNow1 = LocalDate.now();
+//            Period period = Period.between(date1, dateNow1);
+//            double ageYear = period.getYears();
+//            double ageMonths = period.getMonths()/12D;
+//            double ageDays = period.getDays()/365.25D;
+//            double ageDouble = ageYear + ageMonths + ageDays;
+//
+//            double ageSmall;
+//            double ageBig;
+//
+//            if (ageDouble < 0.33) {
+//                ageSmall = 0.31;
+//                ageBig = 0.33;
+//            } else if (ageDouble < 0.59) {
+//                ageSmall = 0.57;
+//                ageBig = 0.59;
+//            } else if (ageDouble < 1) {
+//                ageSmall = 0.98;
+//                ageBig = 1.0;
+//            } else if (ageDouble < 4) {
+//                ageSmall = 3;
+//                ageBig = 4;
+//            } else if (ageDouble < 7) {
+//                ageSmall = 6;
+//                ageBig = 7;
+//            } else if (ageDouble < 11) {
+//                ageSmall = 10;
+//                ageBig = 11;
+//            } else if (ageDouble < 14) {
+//                ageSmall = 17;
+//                ageBig = 14;
+//            } else if (ageDouble < 30) {
+//                ageSmall = 29;
+//                ageBig = 30;
+//            } else if (ageDouble < 40) {
+//                ageSmall = 39;
+//                ageBig = 40;
+//            } else if (ageDouble < 60) {
+//                ageSmall = 59;
+//                ageBig = 60;
+//            } else if (ageDouble < 75) {
+//                ageSmall = 74;
+//                ageBig = 75;
+//            } else {
+//                ageSmall = 100;
+//                ageBig = 101;
+//            }
+//
+//            // weight
+//            int weight;
+//            int userWeight = rawUser.getWeight();
+//            if (userWeight < 41) {
+//                weight = 40;
+//            } else if (userWeight < 46) {
+//                weight = 45;
+//            } else if (userWeight < 51) {
+//                weight = 50;
+//            } else if (userWeight < 56) {
+//                weight = 55;
+//            } else if (userWeight < 61) {
+//                weight = 60;
+//            } else if (userWeight < 66) {
+//                weight = 65;
+//            } else if (userWeight < 71) {
+//                weight = 70;
+//            } else if (userWeight < 76) {
+//                weight = 75;
+//            } else if (userWeight < 81) {
+//                weight = 80;
+//            } else if (userWeight < 86) {
+//                weight = 85;
+//            } else {
+//                weight = 90;
+//            }
+//
+//            // type
+//            Type type = typeDAO.findById(rawUser.getActivityTypeId()).get();
+//
+//            // sex
+//            String sex = "";
+//            int id = rawUser.getGenderId();
+//            if (id == 1) {
+//                sex = "чоловік";
+//            } else {
+//                sex = "жінка";
+//            }
+//
+//
+//            System.out.println("---------------------------");
+//            System.out.println("ageSmall:  " + ageSmall);
+//            System.out.println("ageBig: " + ageBig);
+//            System.out.println("---------");
+//            System.out.println("Weight  " + weight);
+//            System.out.println("Type  " + type.getName());
+//            System.out.println("Sex:  " + sex);
+//            System.out.println("---------------------------");
+//
+//            Set<Norm> byAgeBetweenAndWeightAndSexAndType = normDAO.findByAgeBetweenAndWeightAndSexAndType(ageSmall, ageBig, weight, sex, type);
+//            if (byAgeBetweenAndWeightAndSexAndType.size() != 0) {
+//                byAgeBetweenAndWeightAndSexAndType.forEach(norm -> System.out.println(norm.getId()));
+//
+//                Set<UserNorm> userNorms = new HashSet<>();
+//                for (Norm norm : byAgeBetweenAndWeightAndSexAndType) {
+//                    userNorms.add(new UserNorm(new UserNormId(userek.getId(), norm.getNutrient().getId()), userForDB, norm.getNutrient(), norm.getQuantity()));
+//                }
+//
+//                System.out.println("userek will be updated now");
+//                userek.setNorms(userNorms);
+//
+//                System.out.println("userek will be saved now");
+//                userDAO.save(userek);
+//            }
             return new ResponseEntity<>(userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
                     .stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
@@ -358,6 +484,128 @@ public class UserService implements UserDetailsService {
 
 //        user.getFavoriteRecipes().add(new FavoriteRecipe(recipeDAO.findById(Integer.parseInt(recipeId)).get()));
 //        userDAO.save(user);
+        return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
+    }
+
+    public ResponseEntity<User_DTO> calculateNorms(String username, User user1) {
+
+        User user = userDAO.findByUsername(username);
+        // age
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date1 = LocalDate.parse(user.getDayOfBirth(), formatter);
+        LocalDate dateNow1 = LocalDate.now();
+        Period period = Period.between(date1, dateNow1);
+        double ageYear = period.getYears();
+        double ageMonths = period.getMonths() / 12D;
+        double ageDays = period.getDays() / 365.25D;
+        double ageDouble = ageYear + ageMonths + ageDays;
+
+        double ageSmall;
+        double ageBig;
+
+        if (ageDouble < 0.33) {
+            ageSmall = 0.31;
+            ageBig = 0.33;
+        } else if (ageDouble < 0.59) {
+            ageSmall = 0.57;
+            ageBig = 0.59;
+        } else if (ageDouble < 1) {
+            ageSmall = 0.98;
+            ageBig = 1.0;
+        } else if (ageDouble < 4) {
+            ageSmall = 3;
+            ageBig = 4;
+        } else if (ageDouble < 7) {
+            ageSmall = 6;
+            ageBig = 7;
+        } else if (ageDouble < 11) {
+            ageSmall = 10;
+            ageBig = 11;
+        } else if (ageDouble < 14) {
+            ageSmall = 17;
+            ageBig = 14;
+        } else if (ageDouble < 30) {
+            ageSmall = 29;
+            ageBig = 30;
+        } else if (ageDouble < 40) {
+            ageSmall = 39;
+            ageBig = 40;
+        } else if (ageDouble < 60) {
+            ageSmall = 59;
+            ageBig = 60;
+        } else if (ageDouble < 75) {
+            ageSmall = 74;
+            ageBig = 75;
+        } else {
+            ageSmall = 100;
+            ageBig = 101;
+        }
+
+        // weight
+        int weight;
+        int userWeight = user.getWeight();
+        if (userWeight < 41) {
+            weight = 40;
+        } else if (userWeight < 46) {
+            weight = 45;
+        } else if (userWeight < 51) {
+            weight = 50;
+        } else if (userWeight < 56) {
+            weight = 55;
+        } else if (userWeight < 61) {
+            weight = 60;
+        } else if (userWeight < 66) {
+            weight = 65;
+        } else if (userWeight < 71) {
+            weight = 70;
+        } else if (userWeight < 76) {
+            weight = 75;
+        } else if (userWeight < 81) {
+            weight = 80;
+        } else if (userWeight < 86) {
+            weight = 85;
+        } else {
+            weight = 90;
+        }
+
+        // type
+        Type type = typeDAO.findById(user.getActivityType().getId()).get();
+
+        // sex
+        String sex = "";
+        int id = user.getGender().getId();
+        if (id == 1) {
+            sex = "чоловік";
+        } else {
+            sex = "жінка";
+        }
+
+
+        System.out.println("---------------------------");
+        System.out.println("ageSmall:  " + ageSmall);
+        System.out.println("ageBig: " + ageBig);
+        System.out.println("---------");
+        System.out.println("Weight  " + weight);
+        System.out.println("Type  " + type.getName());
+        System.out.println("Sex:  " + sex);
+        System.out.println("---------------------------");
+
+        Set<Norm> byAgeBetweenAndWeightAndSexAndType = normDAO.findByAgeBetweenAndWeightAndSexAndType(ageSmall, ageBig, weight, sex, type);
+        if (byAgeBetweenAndWeightAndSexAndType.size() != 0) {
+            byAgeBetweenAndWeightAndSexAndType.forEach(norm -> System.out.println(norm.getId()));
+
+            Set<UserNorm> userNorms = new HashSet<>();
+            for (Norm norm : byAgeBetweenAndWeightAndSexAndType) {
+                userNorms.add(new UserNorm(new UserNormId(user.getId(), norm.getNutrient().getId()), user, norm.getNutrient(), norm.getQuantity()));
+            }
+
+            System.out.println("userek will be updated now");
+            user.getNorms().addAll(userNorms);
+
+            System.out.println("userek will be saved now");
+            userDAO.save(user);
+        }
+
         return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
     }
 }
