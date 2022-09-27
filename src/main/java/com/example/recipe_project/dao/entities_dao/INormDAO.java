@@ -8,6 +8,5 @@ import java.util.List;
 import java.util.Set;
 
 public interface INormDAO extends JpaRepository<Norm, Integer> {
-    Set<Norm> findByAgeBetween(double ageSmall, double ageBig);
     Set<Norm> findByAgeBetweenAndWeightAndSexAndType(double ageSmall, double ageBig, int weight, String sex, Type type);
 }

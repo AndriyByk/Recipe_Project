@@ -36,9 +36,10 @@ public class RecipeController {
     @PatchMapping("/{id}")
     public ResponseEntity<Recipe_DTO> updateRecipe(
             @PathVariable int id,
-            @RequestBody Recipe recipe
-    ) {
-        return recipeService.updateRecipe(id, recipe);
+            @RequestParam String recipe,
+            @RequestParam(required = false) MultipartFile picture
+    ) throws IOException {
+        return recipeService.updateRecipe(id, recipe, picture);
     }
 
     @PostMapping("/{username}")

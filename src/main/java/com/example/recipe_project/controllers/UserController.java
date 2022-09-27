@@ -5,10 +5,13 @@ import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import com.example.recipe_project.models.entity.entities.User;
 import com.example.recipe_project.services.entities.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -30,18 +33,26 @@ public class UserController {
         return userService.findUserById(id);
     }
 
-    @PatchMapping("/users/{username}")
+    @PatchMapping("/users/norms/{username}")
     public ResponseEntity<User_DTO> calculateNorms(@PathVariable String username, @RequestBody User user) {
         return userService.calculateNorms(username, user);
     }
 
     //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
-//        return userService.updateUserById(id, user);
-//    }
+    @PatchMapping("users/{id}")
+    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
+        return userService.updateUserById(id, user);
+    }
 
-//    @PatchMapping("/{username}")
+
+    @PatchMapping("user/{username}")
+    public ResponseEntity<User_DTO> updateUserByUsername(
+            @RequestParam String user,
+            @RequestParam(required = false) MultipartFile avatar,
+            @PathVariable String username) throws IOException {
+        return userService.updateUserByUsername(user, avatar, username);
+    }
+//    @PatchMapping("users/{username}")
 //    public ResponseEntity<User_DTO> updateUserByUsername(@PathVariable String username, @RequestBody User user) {
 //        return userService.updateUserByUsername(username, user);
 //    }

@@ -9,8 +9,11 @@ import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.raw.RawRecipe;
 import com.example.recipe_project.models.entity.entities.*;
+import com.example.recipe_project.models.entity.raw.RawUpdatedRecipe;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,34 +57,90 @@ public class RecipeService {
     }
 
     // PATCH
-    public ResponseEntity<Recipe_DTO> updateRecipe(int id, Recipe recipe) {
-        if (recipeDAO.findAll().stream().allMatch(recipeDAO -> recipeDAO.getId() != id)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Recipe recipeFromDB = recipeDAO.findById(id).get();
-        if (recipe.getTitle() != null)
-            recipeFromDB.setTitle(recipe.getTitle());
-        if (recipe.getImage() != null)
-            recipeFromDB.setImage(recipe.getImage());
-        if (recipe.getDescription() != null)
-            recipeFromDB.setDescription(recipe.getDescription());
-        if (recipe.getCategory() != null)
-            recipeFromDB.setCategory(recipe.getCategory());
+    public ResponseEntity<Recipe_DTO> updateRecipe(int id, String recipe, MultipartFile picture) throws IOException {
+        if (recipe != null) {
+            RawUpdatedRecipe rawUpdatedRecipe = new ObjectMapper().readValue(recipe, RawUpdatedRecipe.class);
+            Recipe recipeFromDB = recipeDAO.findById(id).get();
+
+            if(picture != null) {
+                // збереження картинки
+                String path = System.getProperty("user.home") + File.separator
+                        + "IdeaProjects" + File.separator
+                        + "Recipe_Project" + File.separator
+                        + "src" + File.separator
+                        + "main" + File.separator
+                        + "java" + File.separator
+                        + "com" + File.separator
+                        + "example" + File.separator
+                        + "recipe_project" + File.separator
+                        + "pictures" + File.separator
+                        + "recipes" + File.separator;
+
+                String pathOfRecipeDir = path + recipeFromDB.getTitle();
+                new File(pathOfRecipeDir + File.separator + recipeFromDB.getImage()).delete();
+                recipeFromDB.setImage(picture.getOriginalFilename());
+                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
+            }
+
+            if (recipeDAO.findAll().stream().allMatch(recipeDAO -> recipeDAO.getId() != id)) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+//        назву вирішив не оновлювати (див. інфу на фронті)
+//        if (recipe.getTitle() != null)
+//            recipeFromDB.setTitle(recipe.getTitle());
+            if (rawUpdatedRecipe.getDescription() != null)
+                recipeFromDB.setDescription(rawUpdatedRecipe.getDescription());
+            if (rawUpdatedRecipe.getRecipeCategoryId() != 0)
+                recipeFromDB.setCategory(recipeCategoryDAO.findById(rawUpdatedRecipe.getRecipeCategoryId()).get());
 //        if (recipe.getRating() != 0)
 //            recipeFromDB.setRating(recipe.getRating());
-        if (recipe.getWeights() != null && recipe.getWeights().size() != 0)
-            recipeFromDB.setWeights(recipe.getWeights());
-        if (recipe.getTitle() == null &&
-                recipe.getImage() == null &&
-                recipe.getDescription() == null &&
-                recipe.getWeights() == null &&
-                recipe.getCategory() == null) {
+            if (rawUpdatedRecipe.getRawIngredientWithWeights() != null && rawUpdatedRecipe.getRawIngredientWithWeights().size() != 0) {
+//                всі деталі про кількості нутрієнтів в рецепті слід почистити
+                recipeFromDB.getNutrientQuantities().clear();
+//                а також слід почистити вагу інгредієнтів
+                recipeFromDB.getWeights().clear();
+                // допоміжна мапа для зручності (для нутрієнтів в рецепті)
+                Map<Nutrient, Double> quantities = new HashMap<>();
+                // з запиту:
+                rawUpdatedRecipe.getRawIngredientWithWeights().forEach(ingredientWithWeight -> {
+
+                    // інгредієнт
+                    Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
+                    // його вага
+                    int weight = ingredientWithWeight.getWeight();
+
+                    // обрахунок нутрієнтів в рецепті
+                    quantityDAO.findAll().forEach(quantity -> {
+                        Nutrient nutrient = quantity.getNutrient();
+                        double quantity_ = quantity.getQuantity() * weight / 100;
+                        if (quantities.containsKey(nutrient)) {
+                            quantities.replace(nutrient, quantities.get(nutrient) + quantity_);
+                        } else {
+                            quantities.put(nutrient, quantity_);
+                        }
+                    });
+
+                    // зберегти ВАГУ у табличку з вагою
+                    recipeFromDB.getWeights().add(new Weight(ingredient, recipeFromDB, weight));
+                });
+
+                // покласти інфо про нутрієнти в рецепті в РЕЦЕПТ
+                quantities.keySet().forEach(nutrient -> recipeFromDB.getNutrientQuantities().add(new NutrientQuantityInRecipe(nutrient, recipeFromDB, quantities.get(nutrient))));
+            }
+            if (
+//                recipe.getTitle() == null &&
+                    rawUpdatedRecipe.getDescription() == null &&
+                            rawUpdatedRecipe.getRawIngredientWithWeights() == null &&
+                            rawUpdatedRecipe.getRawIngredientWithWeights().size() != 0 &&
+                            rawUpdatedRecipe.getRecipeCategoryId() == 0) {
 //               && recipe.getRating() == 0
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            recipeDAO.save(recipeFromDB);
-            return new ResponseEntity<>(new Recipe_DTO(recipeFromDB), HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                recipeDAO.save(recipeFromDB);
+                return new ResponseEntity<>(new Recipe_DTO(recipeFromDB), HttpStatus.OK);
+            }
         }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     // POST
