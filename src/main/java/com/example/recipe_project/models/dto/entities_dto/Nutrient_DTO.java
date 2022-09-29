@@ -12,11 +12,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Nutrient_DTO {
+    private int idOfNutrient;
     private String name;
     private String about;
     private NutrientCategory_DTO categoryDto;
     private double quantity;
     public Nutrient_DTO(Nutrient nutrient, double quantity) {
+        this.idOfNutrient = nutrient.getId();
         this.name = nutrient.getName();
         this.about = nutrient.getAbout();
         this.categoryDto = new NutrientCategory_DTO(nutrient.getNutrientCategory());
@@ -24,6 +26,7 @@ public class Nutrient_DTO {
     }
 
     public Nutrient_DTO(Nutrient nutrient) {
+        this.idOfNutrient = nutrient.getId();
         this.name = nutrient.getName();
         this.about = nutrient.getAbout();
         this.categoryDto = new NutrientCategory_DTO(nutrient.getNutrientCategory());

@@ -33,6 +33,21 @@ public class RecipeController {
         return recipeService.findRecipeById(id);
     }
 
+    @GetMapping("/find")
+    public ResponseEntity<List<Recipe_DTO>> findFilteredRecipes(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String title
+    ) {
+        return recipeService.findFilteredRecipes(categoryId, title);
+    }
+
+    @GetMapping("/find-by-nutrient/{nutrientId}")
+    public ResponseEntity<List<Recipe_DTO>> findByNutrient(
+            @PathVariable int nutrientId
+    ) {
+        return recipeService.findByNutrient(nutrientId);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<Recipe_DTO> updateRecipe(
             @PathVariable int id,

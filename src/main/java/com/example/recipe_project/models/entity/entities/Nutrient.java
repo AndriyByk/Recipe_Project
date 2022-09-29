@@ -42,5 +42,8 @@ public class Nutrient {
     private List<NutrientQuantityInRecipe> nutrientQuantities;
 
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram;
+
+    @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserNorm> norms = new ArrayList<>();
 }

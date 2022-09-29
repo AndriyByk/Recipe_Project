@@ -20,10 +20,8 @@ public class NutrientService {
     private INutrientDAO nutrientDAO;
     private INutrientCategoryDAO nutrientCategoryDAO;
 
-    public ResponseEntity<List<Nutrient_DTO>> findAllNutrients(
-            int pageNumber,
-            int pageSize) {
-        return new ResponseEntity<>(nutrientDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+    public ResponseEntity<List<Nutrient_DTO>> findAllNutrients() {
+        return new ResponseEntity<>(nutrientDAO.findAll()
                 .stream().map(Nutrient_DTO::new)
                 .collect(Collectors.toList()), HttpStatus.OK);
     }

@@ -20,6 +20,7 @@ public class Recipe_DTO {
     private String image;
     private String title;
     private String description;
+    private String dateOfCreation;
     private RecipeCategory_DTO recipeCategoryDto;
 //    private double rating;
     private List<Weight_DTO> ingredients;
@@ -32,6 +33,7 @@ public class Recipe_DTO {
         this.image = recipe.getImage();
         this.title = recipe.getTitle();
         this.description = recipe.getDescription();
+        this.dateOfCreation = recipe.getDateOfCreation();
         this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getCategory());
         //        this.rating = recipe.getRating();
         this.author = new UserAuthor_DTO(recipe.getAuthor());

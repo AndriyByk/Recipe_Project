@@ -24,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
                 + "pictures" + File.separator;
         // урла запиту з фронта, де ** значать назву картинки (картинки можуть бути і в підпапках)
         registry.addResourceHandler("/pictures/**").addResourceLocations(
+                // урла на беку (папка проекту)
                 path + "users" + File.separator,
                 path + "recipes" + File.separator
         );

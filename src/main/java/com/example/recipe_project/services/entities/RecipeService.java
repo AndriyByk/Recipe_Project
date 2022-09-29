@@ -5,15 +5,14 @@ import com.example.recipe_project.dao.entities_dao.IIngredientDAO;
 import com.example.recipe_project.dao.entities_dao.IRecipeDAO;
 import com.example.recipe_project.dao.entities_dao.IUserDAO;
 import com.example.recipe_project.dao.mediate_dao.IQuantityDAO;
+import com.example.recipe_project.dao.mediate_dao.IQuantityInRecipePer100GramDAO;
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.raw.RawRecipe;
 import com.example.recipe_project.models.entity.entities.*;
 import com.example.recipe_project.models.entity.raw.RawUpdatedRecipe;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +34,7 @@ public class RecipeService {
     private IRecipeCategoryDAO recipeCategoryDAO;
     private IQuantityDAO quantityDAO;
     private IUserDAO userDAO;
+    private IQuantityInRecipePer100GramDAO quantityDAO100;
 
     // GET All recipes
     public ResponseEntity<List<Recipe_DTO>> findAllRecipes(int pageNumber, int pageSize) {
@@ -62,7 +60,7 @@ public class RecipeService {
             RawUpdatedRecipe rawUpdatedRecipe = new ObjectMapper().readValue(recipe, RawUpdatedRecipe.class);
             Recipe recipeFromDB = recipeDAO.findById(id).get();
 
-            if(picture != null) {
+            if (picture != null) {
                 // збереження картинки
                 String path = System.getProperty("user.home") + File.separator
                         + "IdeaProjects" + File.separator
@@ -165,18 +163,19 @@ public class RecipeService {
                     + "pictures" + File.separator
                     + "recipes" + File.separator;
 
-            String pathOfRecipeDir = path + rawRecipe.getTitle();
+            // rawRecipe.getDateOfCreation(): format = dd-MM-yyyy_ss-mm-HH
+            String pathOfRecipeDir = path + rawRecipe.getDateOfCreation();
 
             if (new File(pathOfRecipeDir).mkdir()) {
                 picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
             }
 
             // пусті листи для:
-            // 1) кількості нутрієнтів в рецепті
+            // 1) для кількості нутрієнтів в рецепті
             // 2) для ваги
             List<NutrientQuantityInRecipe> nutrientQuantities = new ArrayList<>();
             List<Weight> weights = new ArrayList<>();
-
+            List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram = new ArrayList<>();
             // зберегти рецепт в ЮЗЕРА
             User user = userDAO.findByUsername(username);
 
@@ -185,14 +184,18 @@ public class RecipeService {
                     picture.getOriginalFilename(),
                     rawRecipe.getTitle(),
                     rawRecipe.getDescription(),
+                    rawRecipe.getDateOfCreation(),
 //                    recipeWithRawIngredients.getRating(),
                     recipeCategoryDAO.findById(rawRecipe.getRecipeCategoryId()).get(),
                     weights,
                     user,
-                    nutrientQuantities);
-
+                    nutrientQuantities,
+                    nutrientQuantitiesPer100Gram);
+            // вага всього рецепту
+            AtomicInteger recipeWeight = new AtomicInteger();
             // допоміжна мапа для зручності (для нутрієнтів в рецепті)
             Map<Nutrient, Double> quantities = new HashMap<>();
+            Map<Nutrient, Double> quantitiesPer100 = new HashMap<>();
             // з запиту:
             rawRecipe.getRawIngredientWithWeights().forEach(ingredientWithWeight -> {
 
@@ -200,6 +203,9 @@ public class RecipeService {
                 Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
                 // його вага
                 int weight = ingredientWithWeight.getWeight();
+
+                // обрахунок всієї маси страви
+                recipeWeight.set(recipeWeight.get() + weight);
 
                 // обрахунок нутрієнтів в рецепті
                 quantityDAO.findAll().forEach(quantity -> {
@@ -210,14 +216,29 @@ public class RecipeService {
                     } else {
                         quantities.put(nutrient, quantity_);
                     }
+
+                    // наповнити мапу[100] ключами нутрієнтів
+                    if (!quantitiesPer100.containsKey(nutrient)) {
+                        quantitiesPer100.put(nutrient, 0.);
+                    }
                 });
 
                 // зберегти ВАГУ у табличку з вагою
                 recipeForDB.getWeights().add(new Weight(ingredient, recipeForDB, weight));
             });
 
+//            заповнити мапу[100] значеннями
+            quantities.keySet().forEach(nutrient -> {
+                double quantity = quantities.get(nutrient);
+                double quantityPer100 = quantity * 100 / recipeWeight.get();
+                quantitiesPer100.replace(nutrient, quantityPer100);
+            });
+
             // покласти інфо про нутрієнти в рецепті в РЕЦЕПТ
-            quantities.keySet().forEach(nutrient -> recipeForDB.getNutrientQuantities().add(new NutrientQuantityInRecipe(nutrient, recipeForDB, quantities.get(nutrient))));
+            quantities.keySet().forEach(nutrient -> {
+                recipeForDB.getNutrientQuantities().add(new NutrientQuantityInRecipe(nutrient, recipeForDB, quantities.get(nutrient)));
+                recipeForDB.getNutrientQuantitiesPer100Gram().add(new NutrientQuantityInRecipePer100Gramm(recipeForDB, nutrient, quantitiesPer100.get(nutrient)));
+            });
 
             // зберегти РЕЦЕПТ
             recipeDAO.save(recipeForDB);
@@ -293,6 +314,47 @@ public class RecipeService {
                 .getRecipes().subList(from, to)
                 .stream()
                 .map(Recipe_DTO::new)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<Recipe_DTO>> findFilteredRecipes(
+            Integer categoryId,
+            String title
+    ) {
+//        System.out.println(categoryId);
+//        System.out.println(title);
+        if (title != null) {
+            if (categoryId != null) {
+                return new ResponseEntity<>(recipeDAO
+                        .findByTitleContainingAndCategory(title, recipeCategoryDAO.findById(categoryId).get())
+                        .stream()
+                        .map(Recipe_DTO::new)
+                        .collect(Collectors.toList()), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(recipeDAO
+                        .findByTitleContaining(title)
+                        .stream()
+                        .map(Recipe_DTO::new)
+                        .collect(Collectors.toList()), HttpStatus.OK);
+            }
+        } else {
+            if (categoryId != null) {
+                return new ResponseEntity<>(recipeDAO
+                        .findByCategory(recipeCategoryDAO.findById(categoryId).get())
+                        .stream()
+                        .map(Recipe_DTO::new)
+                        .collect(Collectors.toList()), HttpStatus.OK);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public ResponseEntity<List<Recipe_DTO>> findByNutrient(int nutrientId) {
+        return new ResponseEntity<>(quantityDAO100
+                .findByNutrientIdOrderByQuantityDesc(nutrientId)
+                .stream()
+                .map(nutrientQuantity -> new Recipe_DTO(nutrientQuantity.getRecipe()))
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 }

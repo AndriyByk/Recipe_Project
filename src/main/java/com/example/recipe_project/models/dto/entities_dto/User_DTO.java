@@ -64,7 +64,7 @@ public class User_DTO {
                 .collect(Collectors.toList());
         this.userNorms = user.getNorms()
                 .stream()
-                .map(userNorm -> new UserNorm_DTO(userNorm.getNutrient().getName(), userNorm.getQuantity()))
+                .map(userNorm -> new UserNorm_DTO(userNorm.getId().getNutrient_id(), userNorm.getNutrient().getName(), userNorm.getQuantity()))
                 .collect(Collectors.toList());
     }
 }

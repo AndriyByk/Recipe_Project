@@ -17,11 +17,8 @@ public class NutrientController {
     private NutrientService nutrientService;
 
     @GetMapping("")
-    public ResponseEntity<List<Nutrient_DTO>> findAllNutrients(
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize
-    ) {
-        return nutrientService.findAllNutrients(pageNumber, pageSize);
+    public ResponseEntity<List<Nutrient_DTO>> findAllNutrients() {
+        return nutrientService.findAllNutrients();
     }
 
     @GetMapping("/{id}")

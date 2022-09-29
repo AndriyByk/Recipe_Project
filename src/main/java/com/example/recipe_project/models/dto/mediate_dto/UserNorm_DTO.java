@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserNorm_DTO {
+    private int idOfNutrient;
     private String nameOfNutrient;
     private double quantity;
 }
