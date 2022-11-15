@@ -19,16 +19,13 @@ public class Quantity {
     private QuantityId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // назва колонки таблички, яка створюється
     @MapsId("nutrient_id")
     private Nutrient nutrient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    // назва колонки таблички, яка створюється
     @MapsId("ingredient_id")
     private Ingredient ingredient;
 
-    // назва середньої колонки
     @Column
     private double quantity;
 

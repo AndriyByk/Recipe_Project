@@ -20,7 +20,7 @@ public class Ingredient {
     private int id;
     private String name;
     private String about;
-
+    private String name_ukr;
     @ManyToOne
     private IngredientCategory ingredientCategory;
 
@@ -30,9 +30,10 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
     private List<Quantity> quantities = new ArrayList<>();
 
-    public Ingredient(String name, String about, IngredientCategory ingredientCategory, List<Quantity> quantities) {
+    public Ingredient(String name, String about, String name_ukr, IngredientCategory ingredientCategory, List<Quantity> quantities) {
         this.name = name;
         this.about = about;
+        this.name_ukr = name_ukr;
         this.ingredientCategory = ingredientCategory;
         this.quantities = quantities;
     }

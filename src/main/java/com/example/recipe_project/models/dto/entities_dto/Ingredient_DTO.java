@@ -16,6 +16,7 @@ public class Ingredient_DTO {
     private int id;
     private String name;
     private String about;
+    private String name_ukr;
     private IngredientCategory_DTO ingredientCategoryDto;
     private List<Quantity_DTO> quantitiesDto;
 
@@ -23,6 +24,8 @@ public class Ingredient_DTO {
         this.id = ingredient.getId();
         this.name = ingredient.getName();
         this.about = ingredient.getAbout();
+        this.name_ukr = ingredient.getName_ukr();
+        System.out.println(ingredient.getName_ukr());
         this.ingredientCategoryDto = new IngredientCategory_DTO(ingredient.getIngredientCategory());
         this.quantitiesDto = ingredient
                 .getQuantities()

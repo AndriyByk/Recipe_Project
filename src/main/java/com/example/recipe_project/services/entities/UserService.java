@@ -399,7 +399,7 @@ public class UserService implements UserDetailsService {
                     new ArrayList<>(),
                     new ArrayList<>(),
                     new HashSet<>(),
-                    new HashSet<>()
+                    new ArrayList<>()
             );
 
             userDAO.save(userForDB);

@@ -74,7 +74,7 @@ public class RecipeService {
                         + "pictures" + File.separator
                         + "recipes" + File.separator;
 
-                String pathOfRecipeDir = path + recipeFromDB.getTitle();
+                String pathOfRecipeDir = path + recipeFromDB.getDateOfCreation();
                 new File(pathOfRecipeDir + File.separator + recipeFromDB.getImage()).delete();
                 recipeFromDB.setImage(picture.getOriginalFilename());
                 picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
@@ -101,25 +101,27 @@ public class RecipeService {
                 Map<Nutrient, Double> quantities = new HashMap<>();
                 // з запиту:
                 rawUpdatedRecipe.getRawIngredientWithWeights().forEach(ingredientWithWeight -> {
+                    // якщо з фронта приходять "пусті" інгредієнти
+                    if (ingredientWithWeight.getId() != 0) {
+                        // інгредієнт
+                        Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
+                        // його вага
+                        int weight = ingredientWithWeight.getWeight();
 
-                    // інгредієнт
-                    Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
-                    // його вага
-                    int weight = ingredientWithWeight.getWeight();
+                        // обрахунок нутрієнтів в рецепті
+                        quantityDAO.findAll().forEach(quantity -> {
+                            Nutrient nutrient = quantity.getNutrient();
+                            double quantity_ = quantity.getQuantity() * weight / 100;
+                            if (quantities.containsKey(nutrient)) {
+                                quantities.replace(nutrient, quantities.get(nutrient) + quantity_);
+                            } else {
+                                quantities.put(nutrient, quantity_);
+                            }
+                        });
 
-                    // обрахунок нутрієнтів в рецепті
-                    quantityDAO.findAll().forEach(quantity -> {
-                        Nutrient nutrient = quantity.getNutrient();
-                        double quantity_ = quantity.getQuantity() * weight / 100;
-                        if (quantities.containsKey(nutrient)) {
-                            quantities.replace(nutrient, quantities.get(nutrient) + quantity_);
-                        } else {
-                            quantities.put(nutrient, quantity_);
-                        }
-                    });
-
-                    // зберегти ВАГУ у табличку з вагою
-                    recipeFromDB.getWeights().add(new Weight(ingredient, recipeFromDB, weight));
+                        // зберегти ВАГУ у табличку з вагою
+                        recipeFromDB.getWeights().add(new Weight(ingredient, recipeFromDB, weight));
+                    }
                 });
 
                 // покласти інфо про нутрієнти в рецепті в РЕЦЕПТ
@@ -199,39 +201,56 @@ public class RecipeService {
             // з запиту:
             rawRecipe.getRawIngredientWithWeights().forEach(ingredientWithWeight -> {
 
-                // інгредієнт
-                Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
-                // його вага
-                int weight = ingredientWithWeight.getWeight();
+                if (ingredientWithWeight.getId() != 0) {
+                    // інгредієнт
+                    Ingredient ingredient = ingredientDAO.findById(ingredientWithWeight.getId()).get();
 
-                // обрахунок всієї маси страви
-                recipeWeight.set(recipeWeight.get() + weight);
+                    // його вага
+                    int weight = ingredientWithWeight.getWeight();
 
-                // обрахунок нутрієнтів в рецепті
-                quantityDAO.findAll().forEach(quantity -> {
-                    Nutrient nutrient = quantity.getNutrient();
-                    double quantity_ = quantity.getQuantity() * weight / 100;
-                    if (quantities.containsKey(nutrient)) {
-                        quantities.replace(nutrient, quantities.get(nutrient) + quantity_);
-                    } else {
-                        quantities.put(nutrient, quantity_);
-                    }
+                    // обрахунок всієї маси страви
+                    recipeWeight.set(recipeWeight.get() + weight);
 
-                    // наповнити мапу[100] ключами нутрієнтів
-                    if (!quantitiesPer100.containsKey(nutrient)) {
-                        quantitiesPer100.put(nutrient, 0.);
-                    }
-                });
+                    // обрахунок нутрієнтів в рецепті по кожному інгредієнту
+                    quantityDAO.findByIngredient(ingredient).forEach(
 
-                // зберегти ВАГУ у табличку з вагою
-                recipeForDB.getWeights().add(new Weight(ingredient, recipeForDB, weight));
+//                    quantityDAO.findAll().forEach(
+                            // конкретний нутрієнт з кількістю
+                            quantity -> {
+                                // нутрієнт, який рахуємо
+                                Nutrient nutrient = quantity.getNutrient();
+                                // кількість нутрієнта у всій страві   -- кількість нутрієнта в 100 грам інгредієнта * вага інгредієнта в рецепті в кілограмах
+                                double quantity_ = quantity.getQuantity() * weight / 100;
+
+                                if (quantities.containsKey(nutrient)) {
+                                    // попередня кількість нутрієнта в страві
+                                    Double aDouble = quantities.get(nutrient);
+                                    // сума попередньої кількості нутрієнта + кількість нутрієнта в цьому інгредієнті
+                                    double v = aDouble + quantity_;
+                                    // заокруглення до 0.000
+                                    double value = Math.ceil(v * 1000) / 1000;
+
+                                    quantities.replace(nutrient, value);
+                                } else {
+                                    quantities.put(nutrient, (Math.ceil(quantity_ * 1000) / 1000));
+                                }
+
+                                // наповнити мапу[100] ключами нутрієнтів
+                                if (!quantitiesPer100.containsKey(nutrient)) {
+                                    quantitiesPer100.put(nutrient, 0.);
+                                }
+                            });
+
+                    // зберегти ВАГУ у табличку з вагою
+                    recipeForDB.getWeights().add(new Weight(ingredient, recipeForDB, weight));
+                }
             });
 
 //            заповнити мапу[100] значеннями
             quantities.keySet().forEach(nutrient -> {
                 double quantity = quantities.get(nutrient);
                 double quantityPer100 = quantity * 100 / recipeWeight.get();
-                quantitiesPer100.replace(nutrient, quantityPer100);
+                quantitiesPer100.replace(nutrient, (Math.ceil(quantityPer100 * 1000) / 1000));
             });
 
             // покласти інфо про нутрієнти в рецепті в РЕЦЕПТ

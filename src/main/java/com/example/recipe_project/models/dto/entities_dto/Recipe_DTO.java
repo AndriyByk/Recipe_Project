@@ -44,6 +44,7 @@ public class Recipe_DTO {
                         weight.getIngredient().getId(),
                         weight.getIngredient().getName(),
                         weight.getIngredient().getAbout(),
+                        weight.getIngredient().getName_ukr(),
                         new IngredientCategory_DTO(weight.getIngredient().getIngredientCategory()),
                         weight.getWeight()
 //                        weight.getIngredient().getQuantities())

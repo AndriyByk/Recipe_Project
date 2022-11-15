@@ -11,6 +11,7 @@ import java.util.List;
 public class RawIngredient {
     private String name;
     private String about;
+    private String name_ukr;
     private int ingredientCategoryId;
     @ToString.Exclude
     private List<RawNutrientWithQuantity> rawNutrients;

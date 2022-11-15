@@ -81,6 +81,7 @@ public class IngredientService {
             Ingredient ingredient = new Ingredient(
                     rawIngredient.getName(),
                     rawIngredient.getAbout(),
+                    rawIngredient.getName_ukr(),
                     ingredientCategoryDAO.findById(rawIngredient.getIngredientCategoryId()).get(),
                     quantities
             );

@@ -52,8 +52,9 @@ public class User implements UserDetails {
     private String lastName;
     private String dateOfRegistration;
 
+    // колишній SET
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserNorm> norms;
+    private List<UserNorm> norms;
 
     // Lists
 
@@ -125,7 +126,7 @@ public class User implements UserDetails {
         this.authTokens = authTokens;
     }
 
-    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens, HashSet<UserNorm> norms) {
+    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens, List<UserNorm> norms) {
         this.username = username;
         this.password = password;
         this.avatar = avatar;

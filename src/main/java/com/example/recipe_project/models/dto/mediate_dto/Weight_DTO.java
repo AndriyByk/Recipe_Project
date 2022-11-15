@@ -12,6 +12,7 @@ public class Weight_DTO {
     private int id;
     private String name;
     private String about;
+    private String name_ukr;
     private IngredientCategory_DTO ingredientCategoryDto;
     private int weight;
 //    private List<Quantity> quantities;

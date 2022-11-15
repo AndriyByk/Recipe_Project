@@ -22,6 +22,7 @@ public class Nutrient {
     private int id;
     private String name;
     private String about;
+    private String unit;
 
 //    public Nutrient(int id, String name, String about, List<Quantity> quantities, NutrientCategory nutrientCategory, List<NutrientQuantityInRecipe> nutrientQuantities) {
 //        this.id = id;
