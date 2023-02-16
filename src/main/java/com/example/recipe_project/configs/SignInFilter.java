@@ -1,8 +1,6 @@
 package com.example.recipe_project.configs;
 
-import com.example.recipe_project.dao.entities_dao.IUserDAO;
-import com.example.recipe_project.dao.tokens_dao.AuthTokenDAO;
-import com.example.recipe_project.models.dto.sign_in.UserSignIn_DTO;
+import com.example.recipe_project.models.dto.sign_in_dto.UserSignIn_DTO;
 import com.example.recipe_project.models.entity.auth.AuthToken;
 import com.example.recipe_project.models.entity.entities.User;
 import com.example.recipe_project.services.authorisation.TokenBuilderService;

@@ -1,7 +1,7 @@
 package com.example.recipe_project.controllers;
 
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
-import com.example.recipe_project.models.dto.sign_in.UserAccessToken_DTO;
+import com.example.recipe_project.models.dto.sign_in_dto.UserAccessToken_DTO;
 import com.example.recipe_project.models.entity.auth.AuthToken;
 import com.example.recipe_project.services.authorisation.TokenService;
 import com.example.recipe_project.services.entities.UserService;
@@ -19,10 +19,10 @@ public class MainController {
     private UserService userService;
     private TokenService tokenService;
 
-    @GetMapping("/")
-    public String home() {
-        return "it is home page";
-    }
+//    @GetMapping("/")
+//    public String home() {
+//        return "it is home page";
+//    }
 
     @PostMapping("/sign-up")
     public ResponseEntity<List<User_DTO>> saveUser(

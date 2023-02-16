@@ -34,11 +34,10 @@ public class UserController {
     }
 
     @PatchMapping("/users/norms/{username}")
-    public ResponseEntity<User_DTO> calculateNorms(@PathVariable String username, @RequestBody User user) {
-        return userService.calculateNorms(username, user);
+    public ResponseEntity<User_DTO> calculateNorms(@PathVariable String username, @RequestBody String user) {
+        return userService.calculateNorms(username);
     }
 
-    //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
     @PatchMapping("users/{id}")
     public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
         return userService.updateUserById(id, user);

@@ -1,7 +1,6 @@
 package com.example.recipe_project.models.entity.entities;
 
-import com.example.recipe_project.models.entity.ids.CreatedRecipeId;
-import com.example.recipe_project.models.entity.ids.FavoriteRecipeId;
+import com.example.recipe_project.models.entity.ids.RankingId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,10 +11,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "created_recipes")
-public class CreatedRecipe {
+@Table(name = "rankings")
+public class Ranking {
     @EmbeddedId
-    private CreatedRecipeId id;
+    private RankingId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("user_id")
@@ -25,9 +24,13 @@ public class CreatedRecipe {
     @MapsId("recipe_id")
     private Recipe recipe;
 
-    public CreatedRecipe(User user, Recipe recipe) {
-        this.id = new CreatedRecipeId(recipe.getId(), user.getId());
+    @Column
+    private int ranking;
+
+    public Ranking(User user, Recipe recipe, int ranking) {
         this.user = user;
         this.recipe = recipe;
+        this.ranking = ranking;
+        this.id = new RankingId(user.getId(), recipe.getId());
     }
 }

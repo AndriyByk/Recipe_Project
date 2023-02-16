@@ -1,4 +1,4 @@
-package com.example.recipe_project.models.dto.sign_in;
+package com.example.recipe_project.models.dto.sign_in_dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

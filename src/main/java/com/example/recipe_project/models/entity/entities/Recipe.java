@@ -4,6 +4,7 @@ import com.example.recipe_project.models.entity.categories.RecipeCategory;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,8 +21,8 @@ public class Recipe {
     @Column(unique = true)
     private String title;
     private String description;
-    private double rating;
     private String dateOfCreation;
+    private double rating;
     @ManyToOne
     private RecipeCategory category;
 
@@ -38,8 +39,10 @@ public class Recipe {
             orphanRemoval = true)
     private List<FavoriteRecipe> favoriteRecipes;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
-    private List<Rank> ranks;
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "recipe",
+            orphanRemoval = true)
+    private List<Ranking> rankings = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
     private List<NutrientQuantityInRecipe> nutrientQuantities;
@@ -68,11 +71,12 @@ public class Recipe {
 //        this.ranks = ranks;
 //    }
 
-    public Recipe(String image, String title, String description, String dateOfCreation, RecipeCategory category, List<Weight> weights, User author, List<NutrientQuantityInRecipe> nutrientQuantities, List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram) {
+    public Recipe(String image, String title, String description, String dateOfCreation, double rating, RecipeCategory category, List<Weight> weights, User author, List<NutrientQuantityInRecipe> nutrientQuantities, List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram) {
         this.image = image;
         this.title = title;
         this.description = description;
         this.dateOfCreation = dateOfCreation;
+        this.rating = rating;
         this.category = category;
         this.weights = weights;
         // ЗРОБЛЕНО! юзера треба скомпонувати з фронтом - має входити той юзер, який зараз авторизований

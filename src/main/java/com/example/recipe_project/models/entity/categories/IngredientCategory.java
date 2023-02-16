@@ -21,6 +21,6 @@ public class IngredientCategory {
     private String name;
     @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "ingredient_category_id")
     private List<Ingredient> ingredients;
 }

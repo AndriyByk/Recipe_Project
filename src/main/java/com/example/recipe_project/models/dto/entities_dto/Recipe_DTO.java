@@ -2,6 +2,8 @@ package com.example.recipe_project.models.dto.entities_dto;
 
 import com.example.recipe_project.models.dto.categories_dto.IngredientCategory_DTO;
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
+import com.example.recipe_project.models.dto.mediate_dto.NutrientQuantitiesInRecipePer100_DTO;
+import com.example.recipe_project.models.dto.mediate_dto.Ranking_DTO;
 import com.example.recipe_project.models.dto.mediate_dto.Weight_DTO;
 import com.example.recipe_project.models.dto.mediate_dto.NutrientQuantitiesInRecipe_DTO;
 import com.example.recipe_project.models.entity.entities.Recipe;
@@ -21,12 +23,14 @@ public class Recipe_DTO {
     private String title;
     private String description;
     private String dateOfCreation;
+    private double rating;
     private RecipeCategory_DTO recipeCategoryDto;
 //    private double rating;
     private List<Weight_DTO> ingredients;
     private List<NutrientQuantitiesInRecipe_DTO> quantities;
+    private List<NutrientQuantitiesInRecipePer100_DTO> quantitiesPer100;
     private UserAuthor_DTO author;
-
+    private List<Ranking_DTO> ranks;
 
     public Recipe_DTO(Recipe recipe) {
         this.id = recipe.getId();
@@ -34,6 +38,7 @@ public class Recipe_DTO {
         this.title = recipe.getTitle();
         this.description = recipe.getDescription();
         this.dateOfCreation = recipe.getDateOfCreation();
+        this.rating = recipe.getRating();
         this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getCategory());
         //        this.rating = recipe.getRating();
         this.author = new UserAuthor_DTO(recipe.getAuthor());
@@ -55,6 +60,17 @@ public class Recipe_DTO {
                 .stream()
                 .map(quantity -> new NutrientQuantitiesInRecipe_DTO(
                     new Nutrient_DTO(quantity.getNutrient(), quantity.getQuantity())))
+                .collect(Collectors.toList());
+        this.quantitiesPer100 = recipe
+                .getNutrientQuantitiesPer100Gram()
+                .stream()
+                .map(quantityPer100 -> new NutrientQuantitiesInRecipePer100_DTO(
+                        new Nutrient_DTO(quantityPer100.getNutrient(), quantityPer100.getQuantity())))
+                .collect(Collectors.toList());
+        this.ranks = recipe
+                .getRankings()
+                .stream()
+                .map(Ranking_DTO::new)
                 .collect(Collectors.toList());
     }
 }

@@ -15,7 +15,6 @@ import com.example.recipe_project.models.entity.entities.*;
 import com.example.recipe_project.models.entity.ids.UserNormId;
 import com.example.recipe_project.models.entity.raw.RawUpdatedUser;
 import com.example.recipe_project.models.entity.raw.RawUser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -68,6 +66,7 @@ public class UserService implements UserDetailsService {
 
     //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
 
+//    не використовується поки
     public ResponseEntity<User_DTO> updateUserById(int id, User user) {
 //        якшо нема такого юзера з таким id то bad request
         if (userDAO.findAll().stream().allMatch(userDAO -> userDAO.getId() != id)) {
@@ -94,51 +93,16 @@ public class UserService implements UserDetailsService {
             userFromDB.setActivityType(user.getActivityType());
         if (user.getLastName() != null)
             userFromDB.setLastName(user.getLastName());
-//        if (user.getFavoriteRecipes() != null && user.getFavoriteRecipes().size() != 0) {
-//            List<FavoriteRecipe> newRecipes = user.getFavoriteRecipes();
-//            for (FavoriteRecipe newRecipe : newRecipes) {
-//                List<FavoriteRecipe> recipesFromDB = userFromDB.getFavoriteRecipes();
-//                for (int j = 0; j < recipesFromDB.size(); j++) {
-//                    FavoriteRecipe recipeFromDB = recipesFromDB.get(j);
-//                    if (newRecipe.getId() == recipeFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (j == recipesFromDB.size() - 1) {
-//                        recipesFromDB.add(newRecipe);
-//                    }
-//                }
-//            }
-//        }
-//        if (user.getCreatedRecipes() != null && user.getCreatedRecipes().size() != 0) {
-//            List<Recipe> newRecipes = user.getCreatedRecipes();
-//            for (Recipe newRecipe : newRecipes) {
-//                List<Recipe> recipesFromDB = userFromDB.getCreatedRecipes();
-//                for (int j = 0; j < recipesFromDB.size(); j++) {
-//                    Recipe recipeFromDB = recipesFromDB.get(j);
-//                    if (newRecipe.getId() == recipeFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (j == recipesFromDB.size() - 1) {
-//                        recipesFromDB.add(newRecipe);
-//                    }
-//                }
-//            }
-//        }
-//        if (user.getRanks() != null && user.getRanks().size() != 0) {
-//            List<Rank> newRanks = user.getRanks();
-//            for (Rank newRank : newRanks) {
-//                List<Rank> ranksFromDB = userFromDB.getRanks();
-//                for (int i = 0; i < ranksFromDB.size(); i++) {
-//                    Rank rankFromDB = ranksFromDB.get(i);
-//                    if (newRank.getId() == rankFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (i == ranksFromDB.size() - 1) {
-//                        ranksFromDB.add(newRank);
-//                    }
-//                }
-//            }
-//        }
+
+        // улюблені рецепти - маємо зберегти ті ж самі, які були до того
+        user.setFavoriteRecipes(userFromDB.getFavoriteRecipes());
+
+        // створені рецепти - маємо зберегти ті ж самі, які були до того
+        user.setCreatedRecipes(userFromDB.getCreatedRecipes());
+
+        // оцінки - треба зберегти, які були
+        user.setRankings(userFromDB.getRankings());
+
 //      якшо новий рецепт зовсім пустий - bad request
         if (user.getName() == null &&
                 user.getEmail() == null &&
@@ -148,9 +112,7 @@ public class UserService implements UserDetailsService {
                 user.getGender() == null &&
                 user.getActivityType() == null &&
                 user.getLastName() == null &&
-                user.getRanks() == null &&
-                user.getFavoriteRecipes() == null &&
-                user.getCreatedRecipes() == null &&
+                user.getRankings() == null &&
                 user.getDateOfRegistration() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
@@ -204,51 +166,6 @@ public class UserService implements UserDetailsService {
                 userFromDB.setActivityType(activityTypeDAO.findById(newUser.getActivityTypeId()).get());
             if (newUser.getLastName() != null && !newUser.getLastName().equals(""))
                 userFromDB.setLastName(newUser.getLastName());
-//        if (user.getFavoriteRecipes() != null && user.getFavoriteRecipes().size() != 0) {
-//            List<FavoriteRecipe> newRecipes = user.getFavoriteRecipes();
-//            for (FavoriteRecipe newRecipe : newRecipes) {
-//                List<FavoriteRecipe> recipesFromDB = userFromDB.getFavoriteRecipes();
-//                for (int j = 0; j < recipesFromDB.size(); j++) {
-//                    FavoriteRecipe recipeFromDB = recipesFromDB.get(j);
-//                    if (newRecipe.getId() == recipeFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (j == recipesFromDB.size() - 1) {
-//                        recipesFromDB.add(newRecipe);
-//                    }
-//                }
-//            }
-//        }
-//        if (user.getCreatedRecipes() != null && user.getCreatedRecipes().size() != 0) {
-//            List<Recipe> newRecipes = user.getCreatedRecipes();
-//            for (Recipe newRecipe : newRecipes) {
-//                List<Recipe> recipesFromDB = userFromDB.getCreatedRecipes();
-//                for (int j = 0; j < recipesFromDB.size(); j++) {
-//                    Recipe recipeFromDB = recipesFromDB.get(j);
-//                    if (newRecipe.getId() == recipeFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (j == recipesFromDB.size() - 1) {
-//                        recipesFromDB.add(newRecipe);
-//                    }
-//                }
-//            }
-//        }
-//        if (user.getRanks() != null && user.getRanks().size() != 0) {
-//            List<Rank> newRanks = user.getRanks();
-//            for (Rank newRank : newRanks) {
-//                List<Rank> ranksFromDB = userFromDB.getRanks();
-//                for (int i = 0; i < ranksFromDB.size(); i++) {
-//                    Rank rankFromDB = ranksFromDB.get(i);
-//                    if (newRank.getId() == rankFromDB.getId()) {
-//                        break;
-//                    }
-//                    if (i == ranksFromDB.size() - 1) {
-//                        ranksFromDB.add(newRank);
-//                    }
-//                }
-//            }
-//        }
 
             if (newUser.getName() == null &&
                     newUser.getEmail() == null &&
@@ -515,8 +432,8 @@ public class UserService implements UserDetailsService {
         return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
     }
 
-    public ResponseEntity<User_DTO> calculateNorms(String username, User user1) {
-
+    public ResponseEntity<User_DTO> calculateNorms(String username) {
+        System.out.println("ooooooooooooooooooooo");
         User user = userDAO.findByUsername(username);
         // age
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -608,19 +525,18 @@ public class UserService implements UserDetailsService {
             sex = "жінка";
         }
 
-
-        System.out.println("---------------------------");
-        System.out.println("ageSmall:  " + ageSmall);
-        System.out.println("ageBig: " + ageBig);
-        System.out.println("---------");
-        System.out.println("Weight  " + weight);
-        System.out.println("Type  " + type.getName());
-        System.out.println("Sex:  " + sex);
-        System.out.println("---------------------------");
+//        System.out.println("---------------------------");
+//        System.out.println("ageSmall:  " + ageSmall);
+//        System.out.println("ageBig: " + ageBig);
+//        System.out.println("---------");
+//        System.out.println("Weight  " + weight);
+//        System.out.println("Type  " + type.getName());
+//        System.out.println("Sex:  " + sex);
+//        System.out.println("---------------------------");
 
         Set<Norm> byAgeBetweenAndWeightAndSexAndType = normDAO.findByAgeBetweenAndWeightAndSexAndType(ageSmall, ageBig, weight, sex, type);
         if (byAgeBetweenAndWeightAndSexAndType.size() != 0) {
-            byAgeBetweenAndWeightAndSexAndType.forEach(norm -> System.out.println(norm.getId()));
+//            byAgeBetweenAndWeightAndSexAndType.forEach(norm -> System.out.println(norm.getId()));
 
             Set<UserNorm> userNorms = new HashSet<>();
             for (Norm norm : byAgeBetweenAndWeightAndSexAndType) {

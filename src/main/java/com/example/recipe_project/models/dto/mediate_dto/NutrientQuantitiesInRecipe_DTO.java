@@ -17,7 +17,6 @@ public class NutrientQuantitiesInRecipe_DTO {
 
     public NutrientQuantitiesInRecipe_DTO(NutrientQuantityInRecipe recipe) {
         this.nutrientDto = new Nutrient_DTO(recipe.getNutrient(), recipe.getQuantity());
-
 //        this.quantity = recipe.getQuantity();
     }
 }

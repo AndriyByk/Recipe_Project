@@ -25,7 +25,6 @@ public class Ingredient_DTO {
         this.name = ingredient.getName();
         this.about = ingredient.getAbout();
         this.name_ukr = ingredient.getName_ukr();
-        System.out.println(ingredient.getName_ukr());
         this.ingredientCategoryDto = new IngredientCategory_DTO(ingredient.getIngredientCategory());
         this.quantitiesDto = ingredient
                 .getQuantities()

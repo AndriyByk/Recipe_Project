@@ -1,9 +1,6 @@
 package com.example.recipe_project.models.entity.ids;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
@@ -14,6 +11,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class NuQuInReId implements Serializable {
     protected int recipe_id;
     protected int nutrient_id;

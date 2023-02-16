@@ -1,9 +1,6 @@
 package com.example.recipe_project.models.entity.ids;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
@@ -13,7 +10,8 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RankId implements Serializable {
+@EqualsAndHashCode
+public class RankingId implements Serializable {
     private int user_id;
     private int recipe_id;
 }

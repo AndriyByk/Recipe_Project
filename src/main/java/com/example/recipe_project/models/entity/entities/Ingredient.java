@@ -24,10 +24,15 @@ public class Ingredient {
     @ManyToOne
     private IngredientCategory ingredientCategory;
 
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "ingredient",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Weight> weights = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "ingredient",
+            cascade = CascadeType.ALL)
     private List<Quantity> quantities = new ArrayList<>();
 
     public Ingredient(String name, String about, String name_ukr, IngredientCategory ingredientCategory, List<Quantity> quantities) {

@@ -24,15 +24,6 @@ public class Nutrient {
     private String about;
     private String unit;
 
-//    public Nutrient(int id, String name, String about, List<Quantity> quantities, NutrientCategory nutrientCategory, List<NutrientQuantityInRecipe> nutrientQuantities) {
-//        this.id = id;
-//        this.name = name;
-//        this.about = about;
-//        this.quantities = quantities;
-//        this.nutrientCategory = nutrientCategory;
-//        this.nutrientQuantities = nutrientQuantities;
-//    }
-
     @OneToMany(mappedBy = "nutrient", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quantity> quantities = new ArrayList<>();
 
