@@ -7,6 +7,7 @@ import com.example.recipe_project.dao.entities_dao.IUserDAO;
 import com.example.recipe_project.dao.categories_dao.IActivityTypeDAO;
 import com.example.recipe_project.dao.categories_dao.IGenderDAO;
 import com.example.recipe_project.dao.mediate_dao.IFavoriteRecipeDAO;
+import com.example.recipe_project.dao.mediate_dao.IRankDAO;
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
@@ -47,6 +48,7 @@ public class UserService implements UserDetailsService {
     private IRecipeDAO recipeDAO;
     private INormDAO normDAO;
     private ITypeDAO typeDAO;
+    private IRankDAO rankDAO;
 
     public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
         List<User_DTO> allUsers_dto = userDAO
@@ -551,5 +553,16 @@ public class UserService implements UserDetailsService {
         }
 
         return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Integer> getRate(int recipeId, int userId) {
+        User user = userDAO.findById(userId).get();
+        Recipe recipe = recipeDAO.findById(recipeId).get();
+        Ranking ranking = rankDAO.findByRecipeAndUser(recipe, user);
+        if (ranking != null) {
+            return new ResponseEntity<>(ranking.getRanking(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        }
     }
 }

@@ -36,13 +36,13 @@ public class NutrientService {
 
     public ResponseEntity<Nutrient_DTO> updateNutrient(int id, Nutrient nutrient) {
         Nutrient nutrientFromDB = nutrientDAO.findById(id).get();
-        if (nutrient.getName() != null)
-            nutrientFromDB.setName(nutrient.getName());
+        if (nutrient.getEngName() != null)
+            nutrientFromDB.setEngName(nutrient.getEngName());
         if (nutrient.getNutrientCategory() != null)
             nutrientFromDB.setNutrientCategory(nutrient.getNutrientCategory());
         if (nutrient.getAbout() != null)
             nutrientFromDB.setAbout(nutrient.getAbout());
-        if (nutrient.getName() == null &&
+        if (nutrient.getEngName() == null &&
                 nutrient.getNutrientCategory() == null &&
                 nutrient.getAbout() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

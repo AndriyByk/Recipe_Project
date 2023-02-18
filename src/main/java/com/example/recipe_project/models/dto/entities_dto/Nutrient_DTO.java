@@ -20,7 +20,7 @@ public class Nutrient_DTO {
     private double quantity;
     public Nutrient_DTO(Nutrient nutrient, double quantity) {
         this.idOfNutrient = nutrient.getId();
-        this.name = nutrient.getName();
+        this.name = nutrient.getEngName();
         this.about = nutrient.getAbout();
         this.unit = nutrient.getUnit();
         this.categoryDto = new NutrientCategory_DTO(nutrient.getNutrientCategory());
@@ -30,7 +30,7 @@ public class Nutrient_DTO {
     // only for NutrientService, which is hasn't been used yet in frontend
     public Nutrient_DTO(Nutrient nutrient) {
         this.idOfNutrient = nutrient.getId();
-        this.name = nutrient.getName();
+        this.name = nutrient.getEngName();
         this.about = nutrient.getAbout();
         this.unit = nutrient.getUnit();
         this.categoryDto = new NutrientCategory_DTO(nutrient.getNutrientCategory());

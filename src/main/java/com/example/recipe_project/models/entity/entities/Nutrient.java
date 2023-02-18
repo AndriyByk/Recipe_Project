@@ -20,7 +20,8 @@ public class Nutrient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private int id;
-    private String name;
+    private String engName;
+    private String ukrName;
     private String about;
     private String unit;
 

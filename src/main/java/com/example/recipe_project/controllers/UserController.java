@@ -28,6 +28,15 @@ public class UserController {
         return userService.findAllUsers(pageNumber, pageSize);
     }
 
+
+    @GetMapping("/users/rates")
+    public ResponseEntity<Integer> getRate(
+            @RequestParam int recipeId,
+            @RequestParam int userId
+    ) {
+        return userService.getRate(recipeId, userId);
+    }
+
     @GetMapping("/user/{id}")
     public ResponseEntity<User_DTO> findUserById(@PathVariable int id) {
         return userService.findUserById(id);

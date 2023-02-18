@@ -17,6 +17,6 @@ public class Quantity_DTO {
 
     public Quantity_DTO(Quantity quantity) {
         this.quantity = quantity.getQuantity();
-        this.nameOfNutrient = quantity.getNutrient().getName();
+        this.nameOfNutrient = quantity.getNutrient().getEngName();
     }
 }
