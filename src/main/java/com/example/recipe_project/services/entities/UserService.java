@@ -10,6 +10,7 @@ import com.example.recipe_project.dao.mediate_dao.IFavoriteRecipeDAO;
 import com.example.recipe_project.dao.mediate_dao.IRankDAO;
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
+import com.example.recipe_project.models.dto.entities_dto.UserShort_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import com.example.recipe_project.models.entity.categories.norm.Type;
 import com.example.recipe_project.models.entity.entities.*;
@@ -50,78 +51,78 @@ public class UserService implements UserDetailsService {
     private ITypeDAO typeDAO;
     private IRankDAO rankDAO;
 
-    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
-        List<User_DTO> allUsers_dto = userDAO
-                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                .stream().map(User_DTO::new)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
-    }
+//    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
+//        List<User_DTO> allUsers_dto = userDAO
+//                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+//                .stream().map(User_DTO::new)
+//                .collect(Collectors.toList());
+//        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
+//    }
 
-    public ResponseEntity<User_DTO> findUserById(int id) {
+    public ResponseEntity<UserShort_DTO> findUserById(int id) {
         User user = userDAO.findById(id).orElse(new User());
         if (user.getId() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
+        return new ResponseEntity<>(new UserShort_DTO(user), HttpStatus.OK);
     }
 
     //////////////// важливий!!!! але поки прибрав, поки тестив стосунок фейворіт і кріейтед ресайпс
 
 //    не використовується поки
-    public ResponseEntity<User_DTO> updateUserById(int id, User user) {
-//        якшо нема такого юзера з таким id то bad request
-        if (userDAO.findAll().stream().allMatch(userDAO -> userDAO.getId() != id)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-//        якшо є - шукаєм в базі
-        User userFromDB = userDAO.findById(id).get();
-
-//        почистити норми (в майбутньому їх треба наново порахувати, через зміну даних)
-        userFromDB.getNorms().clear();
-
-//        робота з даними
-        if (user.getName() != null)
-            userFromDB.setName(user.getName());
-        if (user.getEmail() != null)
-            userFromDB.setEmail(user.getEmail());
-        if (user.getWeight() != 0)
-            userFromDB.setWeight(user.getWeight());
-        if (user.getDayOfBirth() != null)
-            userFromDB.setDayOfBirth(user.getDayOfBirth());
-        if (user.getGender() != null)
-            userFromDB.setGender(user.getGender());
-        if (user.getActivityType() != null)
-            userFromDB.setActivityType(user.getActivityType());
-        if (user.getLastName() != null)
-            userFromDB.setLastName(user.getLastName());
-
-        // улюблені рецепти - маємо зберегти ті ж самі, які були до того
-        user.setFavoriteRecipes(userFromDB.getFavoriteRecipes());
-
-        // створені рецепти - маємо зберегти ті ж самі, які були до того
-        user.setCreatedRecipes(userFromDB.getCreatedRecipes());
-
-        // оцінки - треба зберегти, які були
-        user.setRankings(userFromDB.getRankings());
-
-//      якшо новий рецепт зовсім пустий - bad request
-        if (user.getName() == null &&
-                user.getEmail() == null &&
-                user.getWeight() == 0 &&
-                user.getHeight() == 0 &&
-                user.getDayOfBirth() == null &&
-                user.getGender() == null &&
-                user.getActivityType() == null &&
-                user.getLastName() == null &&
-                user.getRankings() == null &&
-                user.getDateOfRegistration() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            userDAO.save(userFromDB);
-            return new ResponseEntity<>(new User_DTO(userFromDB), HttpStatus.OK);
-        }
-    }
+//    public ResponseEntity<User_DTO> updateUserById(int id, User user) {
+////        якшо нема такого юзера з таким id то bad request
+//        if (userDAO.findAll().stream().allMatch(userDAO -> userDAO.getId() != id)) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+////        якшо є - шукаєм в базі
+//        User userFromDB = userDAO.findById(id).get();
+//
+////        почистити норми (в майбутньому їх треба наново порахувати, через зміну даних)
+//        userFromDB.getNorms().clear();
+//
+////        робота з даними
+//        if (user.getName() != null)
+//            userFromDB.setName(user.getName());
+//        if (user.getEmail() != null)
+//            userFromDB.setEmail(user.getEmail());
+//        if (user.getWeight() != 0)
+//            userFromDB.setWeight(user.getWeight());
+//        if (user.getDayOfBirth() != null)
+//            userFromDB.setDayOfBirth(user.getDayOfBirth());
+//        if (user.getGender() != null)
+//            userFromDB.setGender(user.getGender());
+//        if (user.getActivityType() != null)
+//            userFromDB.setActivityType(user.getActivityType());
+//        if (user.getLastName() != null)
+//            userFromDB.setLastName(user.getLastName());
+//
+//        // улюблені рецепти - маємо зберегти ті ж самі, які були до того
+//        user.setFavoriteRecipes(userFromDB.getFavoriteRecipes());
+//
+//        // створені рецепти - маємо зберегти ті ж самі, які були до того
+//        user.setCreatedRecipes(userFromDB.getCreatedRecipes());
+//
+//        // оцінки - треба зберегти, які були
+//        user.setRankings(userFromDB.getRankings());
+//
+////      якшо новий рецепт зовсім пустий - bad request
+//        if (user.getName() == null &&
+//                user.getEmail() == null &&
+//                user.getWeight() == 0 &&
+//                user.getHeight() == 0 &&
+//                user.getDayOfBirth() == null &&
+//                user.getGender() == null &&
+//                user.getActivityType() == null &&
+//                user.getLastName() == null &&
+//                user.getRankings() == null &&
+//                user.getDateOfRegistration() == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        } else {
+//            userDAO.save(userFromDB);
+//            return new ResponseEntity<>(new User_DTO(userFromDB), HttpStatus.OK);
+//        }
+//    }
 
     public ResponseEntity<User_DTO> updateUserByUsername(String user, MultipartFile avatar, String username) throws IOException {
         if (user != null) {
@@ -435,7 +436,6 @@ public class UserService implements UserDetailsService {
     }
 
     public ResponseEntity<User_DTO> calculateNorms(String username) {
-        System.out.println("ooooooooooooooooooooo");
         User user = userDAO.findByUsername(username);
         // age
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

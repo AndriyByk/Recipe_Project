@@ -506,12 +506,12 @@ public class RecipeService {
         long numberOfAllRecipes;
         int totalPages;
         List<NutrientQuantityInRecipePer100Gramm> chosenRaw = new ArrayList<>();
-        if (!title.equals("undefined")) {
+        if (!title.equals("undefined") && !title.equals("")) {
             if (recipeCategoryId != 0) {
                 List<Recipe> allByTitleAndCategory = recipeDAO
                         .findAllByTitleContainingAndCategory(title, recipeCategoryDAO.findById(recipeCategoryId).get());
                 numberOfAllRecipes = allByTitleAndCategory.stream().count();
-                totalPages = (int) (numberOfAllRecipes / pageSize) + 1;
+                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -527,7 +527,7 @@ public class RecipeService {
             } else {
                 List<Recipe> allByTitle = recipeDAO.findAllByTitleContaining(title);
                 numberOfAllRecipes = allByTitle.stream().count();
-                totalPages = (int) (numberOfAllRecipes / pageSize) + 1;
+                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -545,7 +545,7 @@ public class RecipeService {
             if (recipeCategoryId != 0) {
                 List<Recipe> allByCategory = recipeDAO.findAllByCategory(recipeCategoryDAO.findById(recipeCategoryId).get());
                 numberOfAllRecipes = allByCategory.stream().count();
-                totalPages = (int) (numberOfAllRecipes / pageSize) + 1;
+                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -562,7 +562,7 @@ public class RecipeService {
                 if (nutrientId != 0) {
                     List<NutrientQuantityInRecipePer100Gramm> rawAllRecipes = quantityDAO100.findAllByNutrientIdOrderByQuantityDesc(nutrientId);
                     numberOfAllRecipes = rawAllRecipes.stream().count();
-                    totalPages = (int) (numberOfAllRecipes / pageSize) + 1;
+                    totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
                     if (to >= numberOfAllRecipes) {
                         to = (int) numberOfAllRecipes;
                     }

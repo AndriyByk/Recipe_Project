@@ -46,13 +46,13 @@ public class MainController {
     }
 
     @DeleteMapping("/cabinet/{access}")
-    public AuthToken deleteTokenFromDB(
+    public void deleteTokenFromDB(
             @PathVariable String access
     ) {
         System.out.println(access);
         String bearer = access.replace("Bearer ", "");
         tokenService.deleteAuthTokenByToken(bearer);
-        return new AuthToken();
+//        return new AuthToken();
     }
 
 }

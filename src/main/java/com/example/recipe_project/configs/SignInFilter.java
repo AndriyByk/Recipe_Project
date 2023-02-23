@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 
 @AllArgsConstructor
 public class SignInFilter extends UsernamePasswordAuthenticationFilter {
@@ -36,7 +37,7 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
         setAuthenticationManager(authenticationManager);
         this.userService = userService;
         this.tokenBuilderService = tokenBuilderService;
-        System.out.println("SignInFilter " + url);
+        System.out.println("SignInFilter constructor " + url);
     }
 
     @Override
@@ -45,15 +46,18 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response) throws AuthenticationException {
         try {
             UserSignIn_DTO userSignIn_dto = new ObjectMapper().readValue(request.getInputStream(), UserSignIn_DTO.class);
-
-            System.out.println("SignInFilter " + userSignIn_dto.getUsername());
-            System.out.println("SignInFilter " + userSignIn_dto.getPassword());
+            System.out.println("attemptAuthentication:");
+            System.out.println("SignInFilter Username " + userSignIn_dto.getUsername());
+            System.out.println("SignInFilter Password " + userSignIn_dto.getPassword());
             // співставленння з даними в базі даних
             try {
+                // getAuthenticationManager() належить до UsernamePasswordAuthenticationFilter
+                // під капотом налаштовується з сукупності  конфігурації daoAuthenticationProvider, cors і тд в нашому BeanConfig
                 return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(
+                                // principal - username, credentials - password
+                        // якщо дані невалідні - error 401 unauthorized - див. нижче
                         userSignIn_dto.getUsername(),
                         userSignIn_dto.getPassword()
-                        /*, userSignIn_dto.getRoles()*/
                 ));
             } catch (InternalAuthenticationServiceException e){
                 response.addHeader("Error", "No such user in database");
@@ -78,6 +82,10 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
 
         AuthToken authToken = new AuthToken();
         authToken.setToken(jwtsToken);
+
+        //
+        authToken.setUser(userByName);
+
         userByName.getAuthTokens().add(authToken);
         userService.saveUser(userByName);
 

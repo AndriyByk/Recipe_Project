@@ -45,14 +45,18 @@ public class BeanConfig {
         return source;
     }
 
-    // ---2---
+    // Все починається тут!
+    // ---1---
+//    провайдер, який робить автентифікацію через DAO рівень
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
 
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         // знаходить юзера по юзернейму
+        // прошарок який ідентифікує об'єкти які користувач відправляє на бек - шукає в базі даних
+//       // завдяки методу loadByUsername в userService - тобто чи взагалі є юзер з таким юзернеймом
         authenticationProvider.setUserDetailsService(userDetailsService);
-        // відбувається дешифровка паролю з бази даних - зашифровку дивитись в UserService
+        // відбувається дешифровка паролю з бази даних - зашифровку дивитись в UserService при створенні нового User
         // перевіряє його пароль
         authenticationProvider.setPasswordEncoder(passwordEncoder);
         // + відбувається перевірка ролей

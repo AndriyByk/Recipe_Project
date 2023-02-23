@@ -37,10 +37,19 @@ public class User implements UserDetails {
     private int height;
     private String dayOfBirth;
 
+    // @ElementCollection - для ролей створюється окрема табличка = @OneToMany
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated
+    // @Enumerated = щоб в базу записувало string а не порядковий номер
     //  @Enumerated(EnumType.STRING)
     private List<Role> roles = Arrays.asList(Role.ROLE_USER);
+
+    // Token
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
+    private Set<AuthToken> authTokens = new HashSet<>();
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Gender gender;
@@ -75,46 +84,7 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private List<Recipe> createdRecipes = new ArrayList<>();
 
-    // Token
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL
-    )
-    private Set<AuthToken> authTokens = new HashSet<>();
 
-//    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
-//        this.username = username;
-//        this.password = password;
-//        this.avatar = avatar;
-//        this.email = email;
-//        this.weight = weight;
-//        this.height = height;
-//        this.dayOfBirth = dayOfBirth;
-//        this.gender = gender;
-//        this.activityType = activityType;
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.dateOfRegistration = dateOfRegistration;
-//    }
-
-//    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Rank> ranks, HashSet<AuthToken> authTokens) {
-//        this.username = username;
-//        this.password = password;
-//        this.avatar = avatar;
-//        this.email = email;
-//        this.weight = weight;
-//        this.height = height;
-//        this.dayOfBirth = dayOfBirth;
-//        this.gender = gender;
-//        this.activityType = activityType;
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.dateOfRegistration = dateOfRegistration;
-//        this.favoriteRecipes = favoriteRecipes;
-//        this.createdRecipes = createdRecipes;
-//        this.ranks = ranks;
-//        this.authTokens = authTokens;
-//    }
 
     public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Ranking> rankings, HashSet<AuthToken> authTokens, List<UserNorm> norms) {
         this.username = username;
@@ -136,39 +106,6 @@ public class User implements UserDetails {
         this.norms = norms;
     }
 
-//    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, HashSet<AuthToken> authTokens) {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
-//        this.avatar = avatar;
-//        this.email = email;
-//        this.weight = weight;
-//        this.height = height;
-//        this.dayOfBirth = dayOfBirth;
-//        this.gender = gender;
-//        this.activityType = activityType;
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.dateOfRegistration = dateOfRegistration;
-//        this.authTokens = authTokens;
-//    }
-
-//    public User(int id, String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration) {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
-//        this.avatar = avatar;
-//        this.email = email;
-//        this.weight = weight;
-//        this.height = height;
-//        this.dayOfBirth = dayOfBirth;
-//        this.gender = gender;
-//        this.activityType = activityType;
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.dateOfRegistration = dateOfRegistration;
-//    }
-
     // перевірка ролей під час логінації
     // віддає список ролей того чи іншого користувача
     @Override
@@ -176,6 +113,8 @@ public class User implements UserDetails {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
     }
 
+    // створити додаткові поля в юзері і через сетери - зовні їх змінювати і таким чином впливати на поведінку об'єкта
+//    в методах відображаються стан полів обєкта, які ми зовні можемо змінювати
     @Override
     public boolean isAccountNonExpired() {
         return true;

@@ -2,6 +2,7 @@ package com.example.recipe_project.controllers;
 
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
+import com.example.recipe_project.models.dto.entities_dto.UserShort_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import com.example.recipe_project.models.entity.entities.User;
 import com.example.recipe_project.services.entities.UserService;
@@ -20,13 +21,13 @@ import java.util.List;
 public class UserController {
     private UserService userService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User_DTO>> findAllUsers(
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize
-    ) {
-        return userService.findAllUsers(pageNumber, pageSize);
-    }
+//    @GetMapping("/users")
+//    public ResponseEntity<List<User_DTO>> findAllUsers(
+//            @RequestParam(required = false) int pageNumber,
+//            @RequestParam(required = false) int pageSize
+//    ) {
+//        return userService.findAllUsers(pageNumber, pageSize);
+//    }
 
 
     @GetMapping("/users/rates")
@@ -38,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User_DTO> findUserById(@PathVariable int id) {
+    public ResponseEntity<UserShort_DTO> findUserById(@PathVariable int id) {
         return userService.findUserById(id);
     }
 
@@ -47,13 +48,13 @@ public class UserController {
         return userService.calculateNorms(username);
     }
 
-    @PatchMapping("users/{id}")
-    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
-        return userService.updateUserById(id, user);
-    }
+//    @PatchMapping("users/{id}")
+//    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
+//        return userService.updateUserById(id, user);
+//    }
 
 
-    @PatchMapping("user/{username}")
+    @PatchMapping("/user/{username}")
     public ResponseEntity<User_DTO> updateUserByUsername(
             @RequestParam String user,
             @RequestParam(required = false) MultipartFile avatar,
