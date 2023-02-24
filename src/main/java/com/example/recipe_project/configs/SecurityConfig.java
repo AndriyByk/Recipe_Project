@@ -26,7 +26,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
     private TokenBuilderService tokenBuilderService;
     private AuthTokenDAO authTokenDAO;
-    private IUserDAO userDAO;
 
     // ---3---
     @Override
@@ -37,9 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeHttpRequests()
 
-
                 //  після методу get можна перелічити урли через кому
-
+                //  будь-яка url: "/*"
                 // ----------permitAll()-----------
                 .antMatchers(HttpMethod.GET,
                         "/users",
@@ -76,17 +74,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/recipes/rate").hasAnyRole("USER")
                 .antMatchers(HttpMethod.POST,
                         "/recipes/{username}").hasAnyRole("USER")
-
-                ////////////////////////////////////////////////////////////
-//                .antMatchers(HttpMethod.GET,"/*").permitAll()
-//
-//                .antMatchers(HttpMethod.POST, "/sign-in").permitAll()
-////                .antMatchers(HttpMethod.GET,"/*").hasAnyRole("USER")
-//                // якщо метод не вказувати - то за замовчуванням get
-//                .antMatchers(HttpMethod.POST,"/*").permitAll()
-//                .antMatchers(HttpMethod.PATCH,"/*").permitAll()
-//                .antMatchers(HttpMethod.DELETE,"/*").permitAll()
-                ////////////////////////////////////////////////////////////
 
                 // hand-made фільтрація.
                 // Щоб збудувався токен, який ми зможемо надалі передавати в різні запити (будується лише раз)

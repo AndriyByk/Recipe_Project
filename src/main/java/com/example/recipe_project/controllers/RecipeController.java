@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RecipeController {
     private RecipeService recipeService;
-// pageNumber as a @PathVariable
+
     @GetMapping("/allRecipes/{pageNumber}")
     public ResponseEntity<WrapperForRecipes_DTO> findAllRecipes(
             @PathVariable int pageNumber,
@@ -28,41 +28,12 @@ public class RecipeController {
         return recipeService.findAllRecipes(pageNumber, pageSize);
     }
 
-    // pageNumber as a @RequestParam
-//    @GetMapping("/allRecipes")
-//    public ResponseEntity<WrapperForRecipes_DTO> findAllRecipes(
-//            @RequestParam(required = false) int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return recipeService.findAllRecipes(pageNumber, pageSize);
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Recipe_DTO> findRecipeById(
             @PathVariable int id
     ) {
         return recipeService.findRecipeById(id);
     }
-
-
-//    @GetMapping("/find/{pageNumber}")
-//    public ResponseEntity<WrapperForRecipes_DTO> findFilteredRecipes(
-//            @RequestParam(required = false) Integer categoryId,
-//            @RequestParam(required = false) String title,
-//            @PathVariable int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return recipeService.findFilteredRecipes(categoryId, title, pageNumber, pageSize);
-//    }
-    // nutrientId як @RequestParam
-//    @GetMapping("/find-by-nutrient/{pageNumber}")
-//    public ResponseEntity<WrapperForRecipes_DTO> findByNutrient(
-//            @RequestParam(required = false) int nutrientId,
-//            @PathVariable int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return recipeService.findByNutrient(nutrientId, pageNumber, pageSize);
-//    }
 
     @GetMapping("/find-and-sort/{pageNumber}")
     public ResponseEntity<WrapperForRecipes_DTO> findAndSort(
@@ -74,16 +45,6 @@ public class RecipeController {
     ) {
         return recipeService.findAndSort(categoryId,nutrientId,title,pageSize,pageNumber);
     }
-
-    // nutrientId як @PathVariable
-//    @GetMapping("/find-by-nutrient/{nutrientId}")
-//    public ResponseEntity<WrapperForRecipes_DTO> findByNutrient(
-//            @PathVariable int nutrientId,
-//            @RequestParam(required = false) int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return recipeService.findByNutrient(nutrientId, pageNumber, pageSize);
-//    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Recipe_DTO> updateRecipe(
@@ -112,24 +73,10 @@ public class RecipeController {
         return recipeService.deleteRecipe(id, pageNumber, pageSize);
     }
 
-    /////////////////////
-
     @GetMapping("/categories")
     public ResponseEntity<List<RecipeCategory_DTO>> findAllRecipeCategories() {
         return recipeService.findAllRecipeCategories();
     }
-
-    ///////////////////////////
-    // (не використовується в такому вигляді на фронті)
-
-//    @GetMapping("/categories/{id}")
-//    public ResponseEntity<List<Recipe_DTO>> findRecipesByCategory(
-//            @PathVariable int id,
-//            @RequestParam(required = false) int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return recipeService.findRecipesByCategory(id, pageNumber, pageSize);
-//    }
 
     @PatchMapping("/rate")
     public ResponseEntity<Recipe_DTO> rateRecipe(

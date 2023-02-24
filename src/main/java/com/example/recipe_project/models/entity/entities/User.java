@@ -60,30 +60,22 @@ public class User implements UserDetails {
     private String name;
     private String lastName;
     private String dateOfRegistration;
-
-    // колишній SET
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<UserNorm> norms;
-
-    // Rank
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Ranking> rankings;
-
-    // Lists
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy = "user",
             orphanRemoval = true)
     private List<FavoriteRecipe> favoriteRecipes;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private List<Recipe> createdRecipes = new ArrayList<>();
-
 
 
     public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Ranking> rankings, HashSet<AuthToken> authTokens, List<UserNorm> norms) {
