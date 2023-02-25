@@ -46,6 +46,48 @@ public class RecipeController {
         return recipeService.findAndSort(categoryId,nutrientId,title,pageSize,pageNumber);
     }
 
+    @GetMapping("/created/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> getCreated(
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) int userId,
+            @PathVariable int pageNumber
+    ) {
+        return recipeService.getCreated(pageSize, userId, pageNumber);
+    }
+
+    @GetMapping("/created/find-and-sort/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> getCreatedFilteredAndSorted(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) int nutrientId,
+            @RequestParam(required = false) int userId,
+            @PathVariable int pageNumber
+    ) {
+        return recipeService.getCreatedFilteredAndSorted(categoryId,nutrientId,title,pageSize,userId,pageNumber);
+    }
+
+    @GetMapping("/favorite/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> getFavorite(
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) int userId,
+            @PathVariable int pageNumber
+    ) {
+        return recipeService.getFavorite(pageSize, userId, pageNumber);
+    }
+
+    @GetMapping("/favorite/find-and-sort/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> getFavoriteFilteredAndSorted(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) int nutrientId,
+            @RequestParam(required = false) int userId,
+            @PathVariable int pageNumber
+    ) {
+        return recipeService.getFavoriteFilteredAndSorted(categoryId,nutrientId,title,pageSize,userId,pageNumber);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<Recipe_DTO> updateRecipe(
             @PathVariable int id,

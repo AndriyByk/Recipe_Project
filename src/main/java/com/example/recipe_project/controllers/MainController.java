@@ -19,11 +19,6 @@ public class MainController {
     private UserService userService;
     private TokenService tokenService;
 
-//    @GetMapping("/")
-//    public String home() {
-//        return "it is home page";
-//    }
-
     @PostMapping("/sign-up")
     public ResponseEntity<List<User_DTO>> saveUser(
             @RequestParam String user,
@@ -52,7 +47,6 @@ public class MainController {
         System.out.println(access);
         String bearer = access.replace("Bearer ", "");
         tokenService.deleteAuthTokenByToken(bearer);
-//        return new AuthToken();
     }
 
 }

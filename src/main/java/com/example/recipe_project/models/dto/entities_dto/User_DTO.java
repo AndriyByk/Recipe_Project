@@ -3,6 +3,7 @@ package com.example.recipe_project.models.dto.entities_dto;
 import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.mediate_dto.UserNorm_DTO;
+import com.example.recipe_project.models.entity.entities.Recipe;
 import com.example.recipe_project.models.entity.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -31,9 +32,11 @@ public class User_DTO {
     private String name;
     private String lastName;
     private String dateOfRegistration;
-    private List<Recipe_DTO> favoriteRecipes;
-    private List<Recipe_DTO> createdRecipes;
+//    private List<Recipe_DTO> favoriteRecipes;
+//    private List<Recipe_DTO> createdRecipes;
 
+    private List<Integer> favoriteRecipes;
+    private List<Integer> createdRecipes;
     private List<UserNorm_DTO> userNorms;
 
 
@@ -51,17 +54,20 @@ public class User_DTO {
         this.name = user.getName();
         this.lastName = user.getLastName();
         this.dateOfRegistration = user.getDateOfRegistration();
-        this.favoriteRecipes = user
-                .getFavoriteRecipes()
-                .stream()
-                .map(favoriteRecipe -> new Recipe_DTO(
-                        favoriteRecipe.getRecipe()
-                )).collect(Collectors.toList());
-        this.createdRecipes = user
-                .getCreatedRecipes()
-                .stream()
-                .map(Recipe_DTO::new)
-                .collect(Collectors.toList());
+        this.createdRecipes = user.getCreatedRecipes().stream().map(Recipe::getId).collect(Collectors.toList());
+        this.favoriteRecipes = user.getFavoriteRecipes().stream().map(favoriteRecipe -> favoriteRecipe.getRecipe()
+                .getId()).collect(Collectors.toList());
+//        this.favoriteRecipes = user
+//                .getFavoriteRecipes()
+//                .stream()
+//                .map(favoriteRecipe -> new Recipe_DTO(
+//                        favoriteRecipe.getRecipe()
+//                )).collect(Collectors.toList());
+//        this.createdRecipes = user
+//                .getCreatedRecipes()
+//                .stream()
+//                .map(Recipe_DTO::new)
+//                .collect(Collectors.toList());
         this.userNorms = user.getNorms()
                 .stream()
                 .map(userNorm -> new UserNorm_DTO(userNorm.getId().getNutrient_id(), userNorm.getNutrient().getEngName(), userNorm.getNutrient().getUkrName(), userNorm.getNutrient().getUnit(), userNorm.getQuantity()))

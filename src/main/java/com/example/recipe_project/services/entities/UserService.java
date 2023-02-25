@@ -403,11 +403,6 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<User_DTO> findByUsername(String name) {
         User user = userDAO.findByUsername(name);
-        System.out.println(user);
-        user.getFavoriteRecipes().forEach(favoriteRecipe -> {
-            System.out.println("-----" + favoriteRecipe.getId().getRecipe_id());
-            System.out.println(favoriteRecipe.getId().getUser_id());
-        });
         return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
     }
 
