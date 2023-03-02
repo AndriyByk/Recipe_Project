@@ -77,10 +77,13 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private List<Recipe> createdRecipes = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private List<Comment> comments = new ArrayList<>();
 
-    public User(String username, String password, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Ranking> rankings, HashSet<AuthToken> authTokens, List<UserNorm> norms) {
+    public User(String username, String password, List<Comment> comments, String avatar, String email, int weight, int height, String dayOfBirth, Gender gender, ActivityType activityType, String name, String lastName, String dateOfRegistration, List<FavoriteRecipe> favoriteRecipes, List<Recipe> createdRecipes, List<Ranking> rankings, HashSet<AuthToken> authTokens, List<UserNorm> norms) {
         this.username = username;
         this.password = password;
+        this.comments = comments;
         this.avatar = avatar;
         this.email = email;
         this.weight = weight;

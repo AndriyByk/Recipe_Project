@@ -4,6 +4,7 @@ import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.UserShort_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
+import com.example.recipe_project.models.dto.wrappers_dto.WrapperForUsers_DTO;
 import com.example.recipe_project.models.entity.entities.User;
 import com.example.recipe_project.services.entities.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,14 +22,34 @@ import java.util.List;
 public class UserController {
     private UserService userService;
 
-//    @GetMapping("/users")
-//    public ResponseEntity<List<User_DTO>> findAllUsers(
-//            @RequestParam(required = false) int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return userService.findAllUsers(pageNumber, pageSize);
-//    }
+    @GetMapping("/users/{pageNumber}")
+    public ResponseEntity<List<User_DTO>> findAllUsers(
+            @PathVariable int pageNumber,
+            @RequestParam(required = false) int pageSize
+    ) {
+        return userService.findAllUsers(pageNumber, pageSize);
+    }
 
+    @GetMapping("/users/chosen/{pageNumber}")
+    public ResponseEntity<WrapperForUsers_DTO> findChosenUsers(
+            @PathVariable int pageNumber,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) int role
+    ) {
+        return userService.findChosenUsers(pageNumber, pageSize, username, role);
+    }
+
+    @PatchMapping("/users/{userId}")
+    public ResponseEntity<List<User_DTO>> changeRole(
+            @RequestBody String s,
+            @PathVariable int userId,
+            @RequestParam int role,
+            @RequestParam int pageNumber,
+            @RequestParam int pageSize) {
+        System.out.println("changeRole method in userController = " + s);
+        return userService.changeRole(role, userId, pageNumber, pageSize);
+    }
 
     @GetMapping("/users/rates")
     public ResponseEntity<Integer> getRate(
@@ -47,12 +68,6 @@ public class UserController {
     public ResponseEntity<User_DTO> calculateNorms(@PathVariable String username, @RequestBody String user) {
         return userService.calculateNorms(username);
     }
-
-//    @PatchMapping("users/{id}")
-//    public ResponseEntity<User_DTO> updateUserById(@PathVariable int id, @RequestBody User user) {
-//        return userService.updateUserById(id, user);
-//    }
-
 
     @PatchMapping("/user/{username}")
     public ResponseEntity<User_DTO> updateUserByUsername(

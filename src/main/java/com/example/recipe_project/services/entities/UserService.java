@@ -12,6 +12,8 @@ import com.example.recipe_project.models.dto.categories_dto.ActivityType_DTO;
 import com.example.recipe_project.models.dto.categories_dto.Gender_DTO;
 import com.example.recipe_project.models.dto.entities_dto.UserShort_DTO;
 import com.example.recipe_project.models.dto.entities_dto.User_DTO;
+import com.example.recipe_project.models.dto.wrappers_dto.WrapperForUsers_DTO;
+import com.example.recipe_project.models.entity.categories.Role;
 import com.example.recipe_project.models.entity.categories.norm.Type;
 import com.example.recipe_project.models.entity.entities.*;
 import com.example.recipe_project.models.entity.ids.UserNormId;
@@ -19,6 +21,7 @@ import com.example.recipe_project.models.entity.raw.RawUpdatedUser;
 import com.example.recipe_project.models.entity.raw.RawUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,14 +54,96 @@ public class UserService implements UserDetailsService {
     private ITypeDAO typeDAO;
     private IRankDAO rankDAO;
 
-//    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
-//        List<User_DTO> allUsers_dto = userDAO
-//                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-//                .stream().map(User_DTO::new)
-//                .collect(Collectors.toList());
-//        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
-//    }
+    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
+        List<User_DTO> allUsers_dto = userDAO
+                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+                .stream().map(User_DTO::new)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
+    }
 
+    public ResponseEntity<WrapperForUsers_DTO> findChosenUsers(int pageNumber, int pageSize, String username, int role) {
+
+        int from = pageSize * pageNumber;
+        int to = from + pageSize;
+
+        List<User_DTO> chosenUsers = new ArrayList<>();
+        long numberOfAllUsers;
+        int totalPages;
+
+        if (!username.equals("undefined") && !username.equals("")) {
+            if (role != 100) {
+                System.out.println("role!!! ++++ username!!!");
+
+                List<User> allByRolesAndUsername = userDAO.findAllByRolesInAndUsernameContaining(Collections.singletonList(Role.values()[role]), username);
+                numberOfAllUsers = allByRolesAndUsername.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllUsers / pageSize);
+                if (to >= numberOfAllUsers) {
+                    to = (int) numberOfAllUsers;
+                }
+                chosenUsers.addAll(allByRolesAndUsername.subList(from, to).stream().map(User_DTO::new).collect(Collectors.toList()));
+            } else {
+                System.out.println("role == 100 ++++ username!!!");
+                List<User> allByUsername = userDAO.findAllByUsernameContaining(username);
+                numberOfAllUsers = allByUsername.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllUsers/pageSize);
+                if (to >= numberOfAllUsers) {
+                    to = (int) numberOfAllUsers;
+                }
+                chosenUsers.addAll(allByUsername.subList(from, to).stream().map(User_DTO::new).collect(Collectors.toList()));
+            }
+        } else {
+            if (role != 100) {
+                System.out.println("role!!! ++++ username.equals(\"undefined\")");
+                List<User> allByRoles = userDAO.findAllByRolesIn(Collections.singletonList(Role.values()[role]));
+                numberOfAllUsers = allByRoles.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllUsers/pageSize);
+                if (to >= numberOfAllUsers) {
+                    to = (int) numberOfAllUsers;
+                }
+                chosenUsers.addAll(allByRoles.subList(from, to).stream().map(User_DTO::new).collect(Collectors.toList()));
+            } else {
+                System.out.println("role == 100 ++++ username.equals(\"undefined\")");
+                Page<User> all = userDAO.findAll(PageRequest.of(pageNumber, pageSize));
+                numberOfAllUsers = all.getTotalElements();
+                totalPages = all.getTotalPages();
+                chosenUsers.addAll(all.stream().map(User_DTO::new).collect(Collectors.toList()));
+            }
+        }
+
+        return new ResponseEntity<>(new WrapperForUsers_DTO(
+                numberOfAllUsers,
+                chosenUsers,
+                totalPages,
+                pageNumber
+        ), HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<List<User_DTO>> changeRole(int role, int userId, int pageNumber, int pageSize) {
+        User user = userDAO.findById(userId).get();
+        Role userRole = user.getRoles().get(0);
+        switch (role) {
+            case 0: {
+                if (userRole.ordinal() != Role.ROLE_USER.ordinal()) {
+                    user.getRoles().clear();
+                    user.getRoles().add(Role.ROLE_USER);
+                }
+                break;
+            }
+            case 1: {
+                if (userRole.ordinal() != Role.ROLE_ADMIN.ordinal()) {
+                    user.getRoles().clear();
+                    user.getRoles().add(Role.ROLE_ADMIN);
+                }
+            }
+        }
+        userDAO.save(user);
+
+        return new ResponseEntity<>(
+                userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+                        .stream().map(User_DTO::new).collect(Collectors.toList()), HttpStatus.OK);
+    }
     public ResponseEntity<UserShort_DTO> findUserById(int id) {
         User user = userDAO.findById(id).orElse(new User());
         if (user.getId() == 0) {
@@ -188,7 +273,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-//    public ResponseEntity<User_DTO> updateUserByUsername(String username, User user) {
+    //    public ResponseEntity<User_DTO> updateUserByUsername(String username, User user) {
 //        if (userDAO.findAll().stream().noneMatch(userDAO -> userDAO.getUsername().equals(username))) {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
@@ -305,6 +390,7 @@ public class UserService implements UserDetailsService {
                     rawUser.getUsername(),
                     // закодовка пароля
                     passwordEncoder.encode(rawUser.getPassword()),
+                    new ArrayList<>(),
                     avatar.getOriginalFilename(),
                     rawUser.getEmail(),
                     rawUser.getWeight(),
@@ -560,4 +646,6 @@ public class UserService implements UserDetailsService {
             return new ResponseEntity<>(0, HttpStatus.OK);
         }
     }
+
+
 }

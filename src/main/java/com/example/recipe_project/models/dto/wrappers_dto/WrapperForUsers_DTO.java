@@ -1,6 +1,6 @@
 package com.example.recipe_project.models.dto.wrappers_dto;
 
-import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
+import com.example.recipe_project.models.dto.entities_dto.User_DTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +12,9 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class WrapperForRecipes_DTO {
+public class WrapperForUsers_DTO {
     private long totalElements;
-    private List<Recipe_DTO> recipes;
+    private List<User_DTO> users;
     private int totalPages;
     private int currentPage;
-
 }

@@ -28,6 +28,17 @@ public class RecipeController {
         return recipeService.findAllRecipes(pageNumber, pageSize);
     }
 
+//    000000000000000000 AdminMode 00000000000000000000
+    @GetMapping("/allRecipes/admin-mode/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> findAllRecipesInAdminMode(
+            @PathVariable int pageNumber,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) String checked
+    ) {
+        return recipeService.findAllRecipesInAdminMode(pageNumber, pageSize, checked);
+    }
+//    00000000000000000000000000000000000000000000000
+
     @GetMapping("/{id}")
     public ResponseEntity<Recipe_DTO> findRecipeById(
             @PathVariable int id
@@ -45,6 +56,19 @@ public class RecipeController {
     ) {
         return recipeService.findAndSort(categoryId,nutrientId,title,pageSize,pageNumber);
     }
+
+//    000000000000000000 AdminMode 00000000000000000000
+    @GetMapping("/find-and-sort/admin-mode/{pageNumber}")
+    public ResponseEntity<WrapperForRecipes_DTO> findAndSortInAdminMode(
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) int pageSize,
+            @RequestParam(required = false) int nutrientId,
+            @PathVariable int pageNumber
+    ) {
+        return recipeService.findAndSortInAdminMode(categoryId,nutrientId,title,pageSize,pageNumber);
+    }
+//    00000000000000000000000000000000000000000000000
 
     @GetMapping("/created/{pageNumber}")
     public ResponseEntity<WrapperForRecipes_DTO> getCreated(

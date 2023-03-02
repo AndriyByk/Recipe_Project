@@ -62,18 +62,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                ролі записуються без "ROLE_***"
                 .antMatchers(HttpMethod.GET,
                         "/cabinet/{username}",
-                        "/users/rates").hasAnyRole("USER")
+                        "/users/rates").hasAnyRole("USER","ADMIN","ADMIN_SUPER")
                 .antMatchers(HttpMethod.DELETE,
                         "/cabinet/{access}",
-                        "/users/{id}" ).hasAnyRole("USER")
+                        "/users/{id}" ).hasAnyRole("USER","ADMIN","ADMIN_SUPER")
                 .antMatchers(HttpMethod.PATCH,
                         "/users/norms/{username}",
                         "/user/{username}",
                         "/users/update/{username}",
                         "/recipes/{id}",
-                        "/recipes/rate").hasAnyRole("USER")
+                        "/recipes/rate").hasAnyRole("USER","ADMIN","ADMIN_SUPER")
                 .antMatchers(HttpMethod.POST,
-                        "/recipes/{username}").hasAnyRole("USER")
+                        "/recipes/{username}").hasAnyRole("USER","ADMIN","ADMIN_SUPER")
+
+                // -----------hasAnyRole("ADMIN")---------
+                .antMatchers(HttpMethod.GET, "cabinet/admin").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/allRecipes/admin-mode/{pageNumber}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/find-and-sort/admin-mode/{pageNumber}").hasRole("ADMIN")
+
+                // -----------hasAnyRole("ADMIN_SUPER")---------
+                .antMatchers(HttpMethod.GET, "cabinet/admin-super").hasRole("ADMIN_SUPER")
 
                 // hand-made фільтрація.
                 // Щоб збудувався токен, який ми зможемо надалі передавати в різні запити (будується лише раз)

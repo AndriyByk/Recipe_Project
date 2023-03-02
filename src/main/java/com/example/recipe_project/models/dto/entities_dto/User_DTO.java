@@ -21,6 +21,7 @@ public class User_DTO {
     private int id;
     private String username;
     private String password;
+    private List<String> roles;
     // фотка для відображення на фронті
     private String avatar;
     private String email;
@@ -44,6 +45,7 @@ public class User_DTO {
         this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
+        this.roles = user.getRoles().stream().map(Enum::name).collect(Collectors.toList());
         this.avatar = user.getAvatar();
         this.email = user.getEmail();
         this.weight = user.getWeight();
@@ -57,17 +59,6 @@ public class User_DTO {
         this.createdRecipes = user.getCreatedRecipes().stream().map(Recipe::getId).collect(Collectors.toList());
         this.favoriteRecipes = user.getFavoriteRecipes().stream().map(favoriteRecipe -> favoriteRecipe.getRecipe()
                 .getId()).collect(Collectors.toList());
-//        this.favoriteRecipes = user
-//                .getFavoriteRecipes()
-//                .stream()
-//                .map(favoriteRecipe -> new Recipe_DTO(
-//                        favoriteRecipe.getRecipe()
-//                )).collect(Collectors.toList());
-//        this.createdRecipes = user
-//                .getCreatedRecipes()
-//                .stream()
-//                .map(Recipe_DTO::new)
-//                .collect(Collectors.toList());
         this.userNorms = user.getNorms()
                 .stream()
                 .map(userNorm -> new UserNorm_DTO(userNorm.getId().getNutrient_id(), userNorm.getNutrient().getEngName(), userNorm.getNutrient().getUkrName(), userNorm.getNutrient().getUnit(), userNorm.getQuantity()))

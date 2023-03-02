@@ -11,6 +11,7 @@ import com.example.recipe_project.dao.mediate_dao.IRankDAO;
 import com.example.recipe_project.models.dto.categories_dto.RecipeCategory_DTO;
 import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.dto.wrappers_dto.WrapperForRecipes_DTO;
+import com.example.recipe_project.models.entity.categories.Status;
 import com.example.recipe_project.models.entity.raw.RawRecipe;
 import com.example.recipe_project.models.entity.entities.*;
 import com.example.recipe_project.models.entity.raw.RawRecipeWithUserRate;
@@ -47,16 +48,28 @@ public class RecipeService {
 
     // GET All recipes
     public ResponseEntity<WrapperForRecipes_DTO> findAllRecipes(int pageNumber, int pageSize) {
+        List<Recipe> allByStatusIn = recipeDAO.findAllByStatusIn(Arrays.asList(Status.CHECKED));
 
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        Page<Recipe> allRequestPages = recipeDAO.findAll(pageRequest);
-        long totalRecipes = allRequestPages.getTotalElements();
-        int totalPages = allRequestPages.getTotalPages();
-        List<Recipe> allPagesContent = allRequestPages.getContent();
-        List<Recipe_DTO> allRecipe_DTOS = allPagesContent
-                .stream().map(Recipe_DTO::new)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(new WrapperForRecipes_DTO(totalRecipes, allRecipe_DTOS, totalPages, pageNumber), HttpStatus.OK);
+        int from = pageSize * pageNumber;
+        int to = from + pageSize;
+        long numberOfAllRecipes = allByStatusIn.stream().count();
+        System.out.println(numberOfAllRecipes);
+        int totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+
+        if (to >= numberOfAllRecipes) {
+            to = (int) numberOfAllRecipes;
+        }
+        List<Recipe_DTO> allRecipes = allByStatusIn.subList(from, to).stream().map(Recipe_DTO::new).collect(Collectors.toList());
+
+//        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+//        Page<Recipe> allRequestPages = recipeDAO.findAll(pageRequest);
+//        long totalRecipes = allRequestPages.getTotalElements();
+//        int totalPages = allRequestPages.getTotalPages();
+//        List<Recipe> allPagesContent = allRequestPages.getContent();
+//        List<Recipe_DTO> allRecipe_DTOS = allPagesContent
+//                .stream().map(Recipe_DTO::new)
+//                .collect(Collectors.toList());
+        return new ResponseEntity<>(new WrapperForRecipes_DTO(numberOfAllRecipes, allRecipes, totalPages, pageNumber), HttpStatus.OK);
     }
 
     // GET 1 recipe
@@ -198,6 +211,7 @@ public class RecipeService {
                     rawRecipe.getDescription(),
                     rawRecipe.getDateOfCreation(),
                     0.,
+                    Status.UNCHECKED,
 //                    recipeWithRawIngredients.getRating(),
                     recipeCategoryDAO.findById(rawRecipe.getRecipeCategoryId()).get(),
                     weights,
@@ -401,77 +415,81 @@ public class RecipeService {
         long numberOfAllRecipes;
         int totalPages;
         List<NutrientQuantityInRecipePer100Gramm> chosenRaw = new ArrayList<>();
+
         if (!title.equals("undefined") && !title.equals("")) {
             if (recipeCategoryId != 0) {
-                List<Recipe> allByTitleAndCategory = recipeDAO
-                        .findAllByTitleContainingAndCategory(title, recipeCategoryDAO.findById(recipeCategoryId).get());
-                numberOfAllRecipes = allByTitleAndCategory.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                List<Recipe> allByStatusAndTitleAndCategory = recipeDAO
+                        .findAllByStatusInAndTitleContainingAndCategory(Collections.singletonList(Status.CHECKED), title, recipeCategoryDAO.findById(recipeCategoryId).get());
+                numberOfAllRecipes = allByStatusAndTitleAndCategory.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
                 if (nutrientId != 0) {
-                    allByTitleAndCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    allByStatusAndTitleAndCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
                     chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
-                    List<Recipe_DTO> allRecipesByTitleAndCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByTitleAndCategorySortedByQuantity.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndTitleAndCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndTitleAndCategorySortedByQuantity.subList(from, to));
                 } else {
-                    List<Recipe_DTO> allRecipesByTitleAndCategory = allByTitleAndCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByTitleAndCategory.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndTitleAndCategory = allByStatusAndTitleAndCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndTitleAndCategory.subList(from, to));
                 }
             } else {
-                List<Recipe> allByTitle = recipeDAO.findAllByTitleContaining(title);
-                numberOfAllRecipes = allByTitle.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                List<Recipe> allByStatusAndTitle = recipeDAO.findAllByStatusInAndTitleContaining(Collections.singletonList(Status.CHECKED), title);
+                numberOfAllRecipes = allByStatusAndTitle.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
                 if (nutrientId != 0) {
-                    allByTitle.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    allByStatusAndTitle.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
                     chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
-                    List<Recipe_DTO> allRecipesByTitleSortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByTitleSortedByQuantity.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndTitleSortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndTitleSortedByQuantity.subList(from, to));
                 } else {
-                    List<Recipe_DTO> allRecipesByTitle = allByTitle.stream().map(Recipe_DTO::new).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByTitle.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndTitle = allByStatusAndTitle.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndTitle.subList(from, to));
                 }
             }
         } else {
             if (recipeCategoryId != 0) {
-                List<Recipe> allByCategory = recipeDAO.findAllByCategory(recipeCategoryDAO.findById(recipeCategoryId).get());
-                numberOfAllRecipes = allByCategory.stream().count();
-                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+                List<Recipe> allByStatusAndCategory = recipeDAO.findAllByStatusInAndCategory(Collections.singletonList(Status.CHECKED), recipeCategoryDAO.findById(recipeCategoryId).get());
+                numberOfAllRecipes = allByStatusAndCategory.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
                 if (nutrientId != 0) {
-                    allByCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    allByStatusAndCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
                     chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
-                    List<Recipe_DTO> allRecipesByCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByCategorySortedByQuantity.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndCategorySortedByQuantity.subList(from, to));
                 } else {
-                    List<Recipe_DTO> allRecipesByCategory = allByCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
-                    chosenRecipes.addAll(allRecipesByCategory.subList(from, to));
+                    List<Recipe_DTO> allRecipesByStatusAndCategory = allByStatusAndCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatusAndCategory.subList(from, to));
                 }
             } else {
+                List<Recipe> allByStatus = recipeDAO.findAllByStatusIn(Collections.singletonList(Status.CHECKED));
+                numberOfAllRecipes = allByStatus.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+                if (to >= numberOfAllRecipes) {
+                    to = (int) numberOfAllRecipes;
+                }
                 if (nutrientId != 0) {
-                    List<NutrientQuantityInRecipePer100Gramm> rawAllRecipes = quantityDAO100.findAllByNutrientIdOrderByQuantityDesc(nutrientId);
-                    numberOfAllRecipes = rawAllRecipes.stream().count();
-                    totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
-                    if (to >= numberOfAllRecipes) {
-                        to = (int) numberOfAllRecipes;
-                    }
-                    List<NutrientQuantityInRecipePer100Gramm> rawChosenRecipesPerPage = rawAllRecipes.subList(from, to);
-                    chosenRecipes.addAll(rawChosenRecipesPerPage.stream().map(nutrientQuantity -> new Recipe_DTO(nutrientQuantity.getRecipe())).collect(Collectors.toList()));
+                    allByStatus.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
+                    List<Recipe_DTO> allRecipesByStatusSortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+//                    List<NutrientQuantityInRecipePer100Gramm> rawAllRecipes = quantityDAO100.findAllByNutrientIdOrderByQuantityDesc(nutrientId);
+//                    numberOfAllRecipes = rawAllRecipes.stream().count();
+//                    totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+//                    if (to >= numberOfAllRecipes) {
+//                        to = (int) numberOfAllRecipes;
+//                    }
+//                    List<NutrientQuantityInRecipePer100Gramm> rawChosenRecipesPerPage = rawAllRecipes.subList(from, to
+                    chosenRecipes.addAll(allRecipesByStatusSortedByQuantity.subList(from, to));
                 } else {
-                    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-                    Page<Recipe> allRequestPages = recipeDAO.findAll(pageRequest);
-                    numberOfAllRecipes = allRequestPages.getTotalElements();
-                    totalPages = allRequestPages.getTotalPages();
-                    List<Recipe> allPagesContent = allRequestPages.getContent();
-                    chosenRecipes.addAll(allPagesContent
-                            .stream().map(Recipe_DTO::new)
-                            .collect(Collectors.toList()));
+                    List<Recipe_DTO> allRecipesByStatus = allByStatus.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByStatus.subList(from, to));
                 }
             }
         }
@@ -538,7 +556,7 @@ public class RecipeService {
                 List<Recipe> allByTitleAndCategory = recipeDAO
                         .findAllByAuthorAndTitleContainingAndCategory(user, title, recipeCategoryDAO.findById(recipeCategoryId).get());
                 numberOfAllRecipes = allByTitleAndCategory.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -554,7 +572,7 @@ public class RecipeService {
             } else {
                 List<Recipe> allByTitle = recipeDAO.findAllByAuthorAndTitleContaining(user, title);
                 numberOfAllRecipes = allByTitle.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -572,7 +590,7 @@ public class RecipeService {
             if (recipeCategoryId != 0) {
                 List<Recipe> allByCategory = recipeDAO.findAllByAuthorAndCategory(user, recipeCategoryDAO.findById(recipeCategoryId).get());
                 numberOfAllRecipes = allByCategory.stream().count();
-                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -588,7 +606,7 @@ public class RecipeService {
             } else {
                 List<Recipe> allByAuthor = recipeDAO.findAllByAuthor(user);
                 numberOfAllRecipes = allByAuthor.stream().count();
-                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -597,7 +615,7 @@ public class RecipeService {
                     chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
                     List<Recipe_DTO> allRecipesByAuthorSortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
                     chosenRecipes.addAll(allRecipesByAuthorSortedByQuantity.subList(from, to));
-                   } else {
+                } else {
                     List<Recipe_DTO> allRecipesByAuthor = allByAuthor.stream().map(Recipe_DTO::new).collect(Collectors.toList());
                     chosenRecipes.addAll(allRecipesByAuthor.subList(from, to));
                 }
@@ -629,7 +647,7 @@ public class RecipeService {
                 List<Recipe> allByTitleAndCategoryAndUser = allByTitleAndCategory.stream().filter(recipes::contains).collect(Collectors.toList());
 
                 numberOfAllRecipes = allByTitleAndCategoryAndUser.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -646,7 +664,7 @@ public class RecipeService {
                 List<Recipe> allByTitle = recipeDAO.findAllByTitleContaining(title);
                 List<Recipe> allByTitleAndUser = allByTitle.stream().filter(recipes::contains).collect(Collectors.toList());
                 numberOfAllRecipes = allByTitleAndUser.stream().count();
-                totalPages = (int) Math.ceil((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -665,7 +683,7 @@ public class RecipeService {
                 List<Recipe> allByCategory = recipeDAO.findAllByCategory(recipeCategoryDAO.findById(recipeCategoryId).get());
                 List<Recipe> allByCategoryAndUser = allByCategory.stream().filter(recipes::contains).collect(Collectors.toList());
                 numberOfAllRecipes = allByCategoryAndUser.stream().count();
-                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -680,7 +698,7 @@ public class RecipeService {
                 }
             } else {
                 numberOfAllRecipes = recipes.stream().count();
-                totalPages = (int) Math.ceil ((double)numberOfAllRecipes / pageSize);
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
                 if (to >= numberOfAllRecipes) {
                     to = (int) numberOfAllRecipes;
                 }
@@ -702,5 +720,126 @@ public class RecipeService {
                 totalPages,
                 pageNumber
         ), HttpStatus.OK);
+    }
+
+    public ResponseEntity<WrapperForRecipes_DTO> findAllRecipesInAdminMode(int pageNumber, int pageSize, String checked) {
+        if (checked.equals("undefined")) {
+            PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+            Page<Recipe> allRequestPages = recipeDAO.findAll(pageRequest);
+            long totalRecipes = allRequestPages.getTotalElements();
+            int totalPages = allRequestPages.getTotalPages();
+            List<Recipe> allPagesContent = allRequestPages.getContent();
+            List<Recipe_DTO> allRecipe_DTOS = allPagesContent
+                    .stream().map(Recipe_DTO::new)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(new WrapperForRecipes_DTO(totalRecipes, allRecipe_DTOS, totalPages, pageNumber), HttpStatus.OK);
+        } else if (checked.equals("false")) {
+            List<Recipe> allByStatusIn = recipeDAO.findAllByStatusIn(Arrays.asList(Status.UNCHECKED));
+
+            int from = pageSize * pageNumber;
+            int to = from + pageSize;
+            long numberOfAllRecipes = allByStatusIn.stream().count();
+            int totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+
+            if (to >= numberOfAllRecipes) {
+                to = (int) numberOfAllRecipes;
+            }
+            List<Recipe_DTO> allRecipes = allByStatusIn.subList(from, to).stream().map(Recipe_DTO::new).collect(Collectors.toList());
+            return new ResponseEntity<>(new WrapperForRecipes_DTO(numberOfAllRecipes, allRecipes, totalPages, pageNumber), HttpStatus.OK);
+        } else {
+            return findAllRecipes(pageNumber, pageSize);
+        }
+    }
+
+    public ResponseEntity<WrapperForRecipes_DTO> findAndSortInAdminMode(Integer recipeCategoryId, int nutrientId, String title, int pageSize, int pageNumber) {
+        int from = pageSize * pageNumber;
+        int to = from + pageSize;
+
+        List<Recipe_DTO> chosenRecipes = new ArrayList<>();
+        long numberOfAllRecipes;
+        int totalPages;
+        List<NutrientQuantityInRecipePer100Gramm> chosenRaw = new ArrayList<>();
+
+        if (!title.equals("undefined") && !title.equals("")) {
+            if (recipeCategoryId != 0) {
+                List<Recipe> allByTitleAndCategory = recipeDAO
+                        .findAllByTitleContainingAndCategory(title, recipeCategoryDAO.findById(recipeCategoryId).get());
+                numberOfAllRecipes = allByTitleAndCategory.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+                if (to >= numberOfAllRecipes) {
+                    to = (int) numberOfAllRecipes;
+                }
+                if (nutrientId != 0) {
+                    allByTitleAndCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
+                    List<Recipe_DTO> allRecipesByTitleAndCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByTitleAndCategorySortedByQuantity.subList(from, to));
+                } else {
+                    List<Recipe_DTO> allRecipesByTitleAndCategory = allByTitleAndCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByTitleAndCategory.subList(from, to));
+                }
+            } else {
+                List<Recipe> allByTitle = recipeDAO.findAllByTitleContaining(title);
+                numberOfAllRecipes = allByTitle.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+                if (to >= numberOfAllRecipes) {
+                    to = (int) numberOfAllRecipes;
+                }
+                if (nutrientId != 0) {
+                    allByTitle.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
+                    List<Recipe_DTO> allRecipesByTitleSortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByTitleSortedByQuantity.subList(from, to));
+                } else {
+                    List<Recipe_DTO> allRecipesByTitle = allByTitle.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByTitle.subList(from, to));
+                }
+            }
+        } else {
+            if (recipeCategoryId != 0) {
+                List<Recipe> allByCategory = recipeDAO.findAllByCategory(recipeCategoryDAO.findById(recipeCategoryId).get());
+                numberOfAllRecipes = allByCategory.stream().count();
+                totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+                if (to >= numberOfAllRecipes) {
+                    to = (int) numberOfAllRecipes;
+                }
+                if (nutrientId != 0) {
+                    allByCategory.forEach(recipe -> chosenRaw.add(quantityDAO100.findByRecipeAndNutrientId(recipe, nutrientId)));
+                    chosenRaw.sort((o1, o2) -> (int) (o2.getQuantity() - o1.getQuantity()));
+                    List<Recipe_DTO> allRecipesByCategorySortedByQuantity = chosenRaw.stream().map(raw -> new Recipe_DTO(raw.getRecipe())).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByCategorySortedByQuantity.subList(from, to));
+                } else {
+                    List<Recipe_DTO> allRecipesByCategory = allByCategory.stream().map(Recipe_DTO::new).collect(Collectors.toList());
+                    chosenRecipes.addAll(allRecipesByCategory.subList(from, to));
+                }
+            } else {
+                if (nutrientId != 0) {
+                    List<NutrientQuantityInRecipePer100Gramm> rawAllRecipes = quantityDAO100.findAllByNutrientIdOrderByQuantityDesc(nutrientId);
+                    numberOfAllRecipes = rawAllRecipes.stream().count();
+                    totalPages = (int) Math.ceil((double) numberOfAllRecipes / pageSize);
+                    if (to >= numberOfAllRecipes) {
+                        to = (int) numberOfAllRecipes;
+                    }
+                    List<NutrientQuantityInRecipePer100Gramm> rawChosenRecipesPerPage = rawAllRecipes.subList(from, to);
+                    chosenRecipes.addAll(rawChosenRecipesPerPage.stream().map(nutrientQuantity -> new Recipe_DTO(nutrientQuantity.getRecipe())).collect(Collectors.toList()));
+                } else {
+                    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+                    Page<Recipe> allRequestPages = recipeDAO.findAll(pageRequest);
+                    numberOfAllRecipes = allRequestPages.getTotalElements();
+                    totalPages = allRequestPages.getTotalPages();
+                    List<Recipe> allPagesContent = allRequestPages.getContent();
+                    chosenRecipes.addAll(allPagesContent
+                            .stream().map(Recipe_DTO::new)
+                            .collect(Collectors.toList()));
+                }
+            }
+        }
+        return new ResponseEntity<>(new WrapperForRecipes_DTO(
+                numberOfAllRecipes,
+                chosenRecipes,
+                totalPages,
+                pageNumber
+        ), HttpStatus.OK);
+
     }
 }

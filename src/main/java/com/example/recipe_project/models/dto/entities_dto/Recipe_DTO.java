@@ -24,6 +24,7 @@ public class Recipe_DTO {
     private String description;
     private String dateOfCreation;
     private double rating;
+    private String status;
     private RecipeCategory_DTO recipeCategoryDto;
 //    private double rating;
     private List<Weight_DTO> ingredients;
@@ -31,6 +32,7 @@ public class Recipe_DTO {
     private List<NutrientQuantitiesInRecipePer100_DTO> quantitiesPer100;
     private UserAuthor_DTO author;
     private List<Ranking_DTO> ranks;
+    private List<Comment_DTO> comments;
 
     public Recipe_DTO(Recipe recipe) {
         this.id = recipe.getId();
@@ -39,8 +41,8 @@ public class Recipe_DTO {
         this.description = recipe.getDescription();
         this.dateOfCreation = recipe.getDateOfCreation();
         this.rating = recipe.getRating();
+        this.status = recipe.getStatus().name();
         this.recipeCategoryDto = new RecipeCategory_DTO(recipe.getCategory());
-        //        this.rating = recipe.getRating();
         this.author = new UserAuthor_DTO(recipe.getAuthor());
         this.ingredients = recipe
                 .getWeights()
@@ -71,6 +73,11 @@ public class Recipe_DTO {
                 .getRankings()
                 .stream()
                 .map(Ranking_DTO::new)
+                .collect(Collectors.toList());
+        this.comments = recipe
+                .getComments()
+                .stream()
+                .map(Comment_DTO::new)
                 .collect(Collectors.toList());
     }
 }
