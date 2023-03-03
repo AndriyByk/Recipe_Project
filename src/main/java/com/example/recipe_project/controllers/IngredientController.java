@@ -6,6 +6,7 @@ import com.example.recipe_project.models.dto.entities_dto.Recipe_DTO;
 import com.example.recipe_project.models.entity.entities.Ingredient;
 import com.example.recipe_project.models.entity.raw.RawIngredient;
 import com.example.recipe_project.services.entities.IngredientService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,11 @@ public class IngredientController {
 
     @PostMapping("")
     public ResponseEntity<List<Ingredient_DTO>> saveIngredient (
-            @RequestBody RawIngredient rawIngredient,
+            @RequestBody String ingredient,
             @RequestParam(required = false) int pageNumber,
             @RequestParam(required = false) int pageSize
-    ) {
-        return ingredientService.saveIngredient(rawIngredient, pageNumber, pageSize);
+    ) throws JsonProcessingException {
+        return ingredientService.saveIngredient(ingredient, pageNumber, pageSize);
     }
 
     @DeleteMapping("/{id}")

@@ -18,15 +18,16 @@ public class Comment {
     @Id
     private int id;
     private String message;
-
+    private String date;
     @ManyToOne
     private Recipe recipe;
     @ManyToOne
     private User author;
 
-    public Comment(String message, Recipe recipe, User author) {
+    public Comment(String message, Recipe recipe, User author, String date) {
         this.message = message;
         this.recipe = recipe;
         this.author = author;
+        this.date = date;
     }
 }

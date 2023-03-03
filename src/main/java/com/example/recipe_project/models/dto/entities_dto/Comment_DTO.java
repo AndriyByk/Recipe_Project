@@ -11,9 +11,13 @@ import lombok.Setter;
 public class Comment_DTO {
     private int id;
     private String message;
+    private String date;
+    private CommentAuthor_DTO author;
 
     public Comment_DTO(Comment comment) {
         this.id = comment.getId();
+        this.date = comment.getDate();
         this.message = comment.getMessage();
+        this.author = new CommentAuthor_DTO(comment);
     }
 }

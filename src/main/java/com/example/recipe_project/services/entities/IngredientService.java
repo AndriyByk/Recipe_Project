@@ -10,6 +10,8 @@ import com.example.recipe_project.models.entity.entities.Ingredient;
 import com.example.recipe_project.models.entity.entities.Nutrient;
 import com.example.recipe_project.models.entity.entities.Quantity;
 import com.example.recipe_project.models.entity.raw.RawIngredient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -74,8 +76,10 @@ public class IngredientService {
     }
 
     // POST
-    public ResponseEntity<List<Ingredient_DTO>> saveIngredient(RawIngredient rawIngredient, int pageNumber,
-                                                               int pageSize) {
+    public ResponseEntity<List<Ingredient_DTO>> saveIngredient(String ingredientRaw, int pageNumber,
+                                                               int pageSize) throws JsonProcessingException {
+       RawIngredient rawIngredient = new ObjectMapper().readValue(ingredientRaw, RawIngredient.class);
+
         if (rawIngredient != null) {
             List<Quantity> quantities = new ArrayList<>();
             Ingredient ingredient = new Ingredient(
