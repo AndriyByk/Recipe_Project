@@ -70,11 +70,11 @@ public class RecipeController {
     }
 //    00000000000000000000000000000000000000000000000
 
-    @GetMapping("/created/{pageNumber}")
+    @GetMapping("/created")
     public ResponseEntity<WrapperForRecipes_DTO> getCreated(
             @RequestParam(required = false) int pageSize,
             @RequestParam(required = false) int userId,
-            @PathVariable int pageNumber
+            @RequestParam(required = false) int pageNumber
     ) {
         return recipeService.getCreated(pageSize, userId, pageNumber);
     }
@@ -149,5 +149,13 @@ public class RecipeController {
             @RequestBody String rate
     ) throws JsonProcessingException {
         return recipeService.rateRecipe(rate);
+    }
+
+    @PatchMapping("/change-status")
+    public ResponseEntity<Recipe_DTO> changeStatus(
+            @RequestBody String body,
+            @RequestParam(required = false) String recipeId
+    ) {
+        return recipeService.changeStatus(recipeId);
     }
 }

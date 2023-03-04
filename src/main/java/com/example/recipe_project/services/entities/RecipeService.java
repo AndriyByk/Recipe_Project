@@ -842,4 +842,17 @@ public class RecipeService {
         ), HttpStatus.OK);
 
     }
+
+    public ResponseEntity<Recipe_DTO> changeStatus(String recipeId) {
+        Recipe recipe = recipeDAO.findById(Integer.parseInt(recipeId)).get();
+        Status status = recipe.getStatus();
+        if (status == Status.UNCHECKED) {
+            recipe.setStatus(Status.CHECKED);
+        } else {
+            recipe.setStatus(Status.UNCHECKED);
+        }
+        recipeDAO.save(recipe);
+
+        return new ResponseEntity<>(new Recipe_DTO(recipe), HttpStatus.OK);
+    }
 }
