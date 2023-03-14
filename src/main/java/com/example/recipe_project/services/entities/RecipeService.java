@@ -87,6 +87,9 @@ public class RecipeService {
             RawUpdatedRecipe rawUpdatedRecipe = new ObjectMapper().readValue(recipe, RawUpdatedRecipe.class);
             Recipe recipeFromDB = recipeDAO.findById(id).get();
 
+            // якщо рецепт оновлюється користувачем, його ще має схвалити адмін, тож іде в список до UNCHECKED
+            recipeFromDB.setStatus(Status.UNCHECKED);
+
             if (picture != null) {
                 // збереження картинки
                 String path = System.getProperty("user.home") + File.separator
