@@ -27,4 +27,9 @@ public class CommentService {
         commentDAO.save(new Comment(rawComment.getComment(), recipeDAO.findById(recipeId).get(), userDAO.findById(userId).get(), date));
         return new ResponseEntity<>(new Recipe_DTO(recipeDAO.findById(recipeId).get()), HttpStatus.OK);
     }
+
+    public ResponseEntity<Recipe_DTO> deleteComment(int commentId, int recipeId) {
+        commentDAO.deleteById(commentId);
+        return new ResponseEntity<>(new Recipe_DTO(recipeDAO.findById(recipeId).get()), HttpStatus.OK);
+    }
 }

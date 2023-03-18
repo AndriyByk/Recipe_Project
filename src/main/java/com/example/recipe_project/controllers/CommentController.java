@@ -21,11 +21,15 @@ public class CommentController {
             @RequestParam(required = false) int recipeId,
             @RequestParam(required = false) String date
     ) throws JsonProcessingException {
-
-        System.out.println(comment);
-        System.out.println(userId);
-        System.out.println(recipeId);
         return commentService.saveComment(comment, userId, recipeId, date);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Recipe_DTO> deleteComment(
+            @RequestParam(required = false) int commentId,
+            @RequestParam(required = false) int recipeId
+    ) {
+        return commentService.deleteComment(commentId, recipeId);
     }
 
 }
