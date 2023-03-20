@@ -8,8 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface IQuantityInRecipePer100GramDAO extends JpaRepository<NutrientQuantityInRecipePer100Gramm, Integer> {
-    List<NutrientQuantityInRecipePer100Gramm> findAllByNutrientIdOrderByQuantityDesc(int nutrient_id, PageRequest request);
-    List<NutrientQuantityInRecipePer100Gramm> findAllByNutrientIdOrderByQuantityDesc(int nutrient_id);
-
     NutrientQuantityInRecipePer100Gramm findByRecipeAndNutrientId(Recipe recipe, int nutrient_id);
 }

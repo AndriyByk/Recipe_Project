@@ -82,7 +82,8 @@ public class NutrientService {
             return new ResponseEntity<>(nutrientDAO
                     .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
                     .stream()
-                    .map(Nutrient_DTO::new).collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+                    .map(Nutrient_DTO::new)
+                    .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }
     }
 
