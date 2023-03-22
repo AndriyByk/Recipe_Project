@@ -13,10 +13,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class NutrientQuantitiesInRecipe_DTO {
     private Nutrient_DTO nutrientDto;
-//    private double quantity;
-
-    public NutrientQuantitiesInRecipe_DTO(NutrientQuantityInRecipe recipe) {
-        this.nutrientDto = new Nutrient_DTO(recipe.getNutrient(), recipe.getQuantity());
-//        this.quantity = recipe.getQuantity();
-    }
 }

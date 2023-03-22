@@ -44,9 +44,7 @@ public class MainController {
     public void deleteTokenFromDB(
             @PathVariable String access
     ) {
-        System.out.println(access);
         String bearer = access.replace("Bearer ", "");
         tokenService.deleteAuthTokenByToken(bearer);
     }
-
 }

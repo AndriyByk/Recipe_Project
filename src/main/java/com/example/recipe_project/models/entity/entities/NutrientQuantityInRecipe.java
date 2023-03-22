@@ -34,5 +34,4 @@ public class NutrientQuantityInRecipe {
         this.id = new NuQuInReId(recipe.getId(), nutrient.getId());
     }
 
-
 }

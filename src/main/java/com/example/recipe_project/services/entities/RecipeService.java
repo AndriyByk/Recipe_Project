@@ -76,8 +76,8 @@ public class RecipeService {
         }
         return new ResponseEntity<>(new Recipe_DTO(recipe), HttpStatus.OK);
     }
-    // PATCH
 
+    // PATCH
     public ResponseEntity<Recipe_DTO> updateRecipe(int id, String recipe, MultipartFile picture) throws IOException {
         if (recipe != null) {
             RawUpdatedRecipe rawUpdatedRecipe = new ObjectMapper().readValue(recipe, RawUpdatedRecipe.class);
@@ -152,9 +152,9 @@ public class RecipeService {
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    // POST
 
-    public ResponseEntity<List<Recipe_DTO>> saveRecipe(String recipe, MultipartFile picture, String username) throws IOException {
+    // POST
+    public ResponseEntity<Recipe_DTO> saveRecipe(String recipe, MultipartFile picture, String username) throws IOException {
         if (recipe != null) {
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
 
@@ -171,6 +171,7 @@ public class RecipeService {
             List<NutrientQuantityInRecipe> nutrientQuantities = new ArrayList<>();
             List<Weight> weights = new ArrayList<>();
             List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram = new ArrayList<>();
+            List<Comment> comments = new ArrayList<>();
             // зберегти рецепт в ЮЗЕРА
             User user = userDAO.findByUsername(username);
 
@@ -186,7 +187,8 @@ public class RecipeService {
                     weights,
                     user,
                     nutrientQuantities,
-                    nutrientQuantitiesPer100Gram);
+                    nutrientQuantitiesPer100Gram,
+                    comments);
             // вага всього рецепту
             AtomicInteger recipeWeight = new AtomicInteger();
             // допоміжна мапа для зручності (для нутрієнтів в рецепті)
@@ -252,18 +254,19 @@ public class RecipeService {
             // зберегти РЕЦЕПТ
             recipeDAO.save(recipeForDB);
 
-            return new ResponseEntity<>(recipeDAO.findAll().stream()
-                    .map(Recipe_DTO::new)
-                    .collect(Collectors.toList()), HttpStatus.OK);
+            return new ResponseEntity<>(new Recipe_DTO(recipeForDB), HttpStatus.OK);
+
+//            return new ResponseEntity<>(recipeDAO.findAll().stream()
+//                    .map(Recipe_DTO::new)
+//                    .collect(Collectors.toList()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(recipeDAO.findAll().stream()
-                    .map(Recipe_DTO::new)
-                    .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+//            заглушка
+            return new ResponseEntity<>(new Recipe_DTO(), HttpStatus.BAD_REQUEST);
         }
     }
-    // DELETE
 
-    public ResponseEntity<List<Recipe_DTO>> deleteRecipe(int id, int pageNumber, int pageSize) {
+    // DELETE
+   public ResponseEntity<List<Recipe_DTO>> deleteRecipe(int id, int pageNumber, int pageSize) {
         if (recipeDAO.findAll().stream().anyMatch(recipe -> recipe.getId() == id)) {
             recipeDAO.deleteById(id);
             return new ResponseEntity<>(recipeDAO

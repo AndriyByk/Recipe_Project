@@ -20,7 +20,6 @@ public class UserShort_DTO {
     private String avatar;
     private String role;
     private String dateOfRegistration;
-//    private List<Recipe_DTO> createdRecipes;
     private List<Integer> createdRecipes;
 
     public UserShort_DTO(User user) {
@@ -30,11 +29,5 @@ public class UserShort_DTO {
         this.role = user.getRoles().get(0).name();
         this.dateOfRegistration = user.getDateOfRegistration();
         this.createdRecipes = user.getCreatedRecipes().stream().map(Recipe::getId).collect(Collectors.toList());
-
-//        this.createdRecipes = user
-//                .getCreatedRecipes()
-//                .stream()
-//                .map(Recipe_DTO::new)
-//                .collect(Collectors.toList());
     }
 }

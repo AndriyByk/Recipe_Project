@@ -37,7 +37,6 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
         setAuthenticationManager(authenticationManager);
         this.userService = userService;
         this.tokenBuilderService = tokenBuilderService;
-        System.out.println("SignInFilter constructor " + url);
     }
 
     @Override
@@ -46,9 +45,7 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response) throws AuthenticationException {
         try {
             UserSignIn_DTO userSignIn_dto = new ObjectMapper().readValue(request.getInputStream(), UserSignIn_DTO.class);
-            System.out.println("attemptAuthentication:");
-            System.out.println("SignInFilter Username " + userSignIn_dto.getUsername());
-            System.out.println("SignInFilter Password " + userSignIn_dto.getPassword());
+
             // співставленння з даними в базі даних
             try {
                 // getAuthenticationManager() належить до UsernamePasswordAuthenticationFilter
@@ -64,7 +61,6 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("errrrrrorrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
         }
         return null;
     }
@@ -81,9 +77,8 @@ public class SignInFilter extends UsernamePasswordAuthenticationFilter {
         String jwtsToken = tokenBuilderService.createToken(authResult);
 
         AuthToken authToken = new AuthToken();
-        authToken.setToken(jwtsToken);
 
-        //
+        authToken.setToken(jwtsToken);
         authToken.setUser(userByName);
 
         userByName.getAuthTokens().add(authToken);

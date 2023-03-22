@@ -122,7 +122,7 @@ public class RecipeController {
     }
 
     @PostMapping("/{username}")
-    public ResponseEntity<List<Recipe_DTO>> saveRecipe(
+    public ResponseEntity<Recipe_DTO> saveRecipe(
             @RequestParam String recipe,
             @PathVariable String username,
             @RequestParam(required = false) MultipartFile picture

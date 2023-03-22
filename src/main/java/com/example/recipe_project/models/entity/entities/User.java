@@ -39,24 +39,19 @@ public class User implements UserDetails {
 
     // @ElementCollection - для ролей створюється окрема табличка = @OneToMany
     @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated
     // @Enumerated = щоб в базу записувало string а не порядковий номер
-    //  @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
+    @Enumerated
     private List<Role> roles = Arrays.asList(Role.ROLE_USER);
-
-    // Token
     @OneToMany(
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
     private Set<AuthToken> authTokens = new HashSet<>();
-
     @ManyToOne(cascade = CascadeType.ALL)
     private Gender gender;
-
     @ManyToOne(cascade = CascadeType.ALL)
     private ActivityType activityType;
-
     private String name;
     private String lastName;
     private String dateOfRegistration;
@@ -76,7 +71,6 @@ public class User implements UserDetails {
     private List<FavoriteRecipe> favoriteRecipes;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private List<Recipe> createdRecipes = new ArrayList<>();
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private List<Comment> comments = new ArrayList<>();
 

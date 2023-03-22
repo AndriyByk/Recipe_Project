@@ -15,17 +15,4 @@ import java.util.Objects;
 public class QuantityId implements Serializable {
     private int ingredient_id;
     private int nutrient_id;
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof QuantityId)) return false;
-//        QuantityId that = (QuantityId) o;
-//        return getIngredient_id() == that.getIngredient_id() && getNutrient_id() == that.getNutrient_id();
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(getIngredient_id(), getNutrient_id());
-//    }
 }

@@ -23,6 +23,6 @@ public class NutrientCategory {
     @Column(name = "name")
     private String name;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "nutrient_category_id")
     private List<Nutrient> nutrients;
 }

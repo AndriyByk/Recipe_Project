@@ -24,14 +24,6 @@ public class IngredientController {
         return ingredientService.findAllIngredients();
     }
 
-//    @GetMapping("")
-//    public ResponseEntity<List<Ingredient_DTO>> findAllIngredients(
-//            @RequestParam(required = false) int pageNumber,
-//            @RequestParam(required = false) int pageSize
-//    ) {
-//        return ingredientService.findAllIngredientsWithPages(pageNumber, pageSize);
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Ingredient_DTO> findIngredientById(@PathVariable int id) {
         return ingredientService.findIngredientById(id);

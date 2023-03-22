@@ -28,6 +28,7 @@ public class Nutrient_DTO {
     }
 
     // only for NutrientService, which is hasn't been used yet in frontend
+    // dead code
     public Nutrient_DTO(Nutrient nutrient) {
         this.idOfNutrient = nutrient.getId();
         this.name = nutrient.getEngName();

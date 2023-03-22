@@ -30,15 +30,6 @@ public class IngredientService {
     private INutrientDAO nutrientDAO;
 
     // GET All
-    public ResponseEntity<List<Ingredient_DTO>> findAllIngredientsWithPages(int pageNumber,
-                                                                            int pageSize) {
-        return new ResponseEntity<>(ingredientDAO
-                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                .stream()
-                .map(Ingredient_DTO::new)
-                .collect(Collectors.toList()), HttpStatus.OK);
-    }
-
     public ResponseEntity<List<Ingredient_DTO>> findAllIngredients() {
         return new ResponseEntity<>(ingredientDAO
                 .findAll()

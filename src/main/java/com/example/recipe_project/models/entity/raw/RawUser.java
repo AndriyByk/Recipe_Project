@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
-
 public class RawUser {
     private String username;
     private String password;
@@ -19,7 +18,6 @@ public class RawUser {
     private String name;
     private String lastName;
     private String dateOfRegistration;
-
     private int activityTypeId;
     private int genderId;
 

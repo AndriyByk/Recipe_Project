@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface IRankDAO extends JpaRepository<Ranking, Integer> {
-
     List<Ranking> findAllByRecipe (Recipe recipe);
     Ranking findByRecipeAndUser(Recipe recipe, User user);
 }

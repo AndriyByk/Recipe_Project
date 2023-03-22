@@ -26,7 +26,6 @@ public class Recipe_DTO {
     private double rating;
     private String status;
     private RecipeCategory_DTO recipeCategoryDto;
-//    private double rating;
     private List<Weight_DTO> ingredients;
     private List<NutrientQuantitiesInRecipe_DTO> quantities;
     private List<NutrientQuantitiesInRecipePer100_DTO> quantitiesPer100;
@@ -53,9 +52,7 @@ public class Recipe_DTO {
                         weight.getIngredient().getAbout(),
                         weight.getIngredient().getName_ukr(),
                         new IngredientCategory_DTO(weight.getIngredient().getIngredientCategory()),
-                        weight.getWeight()
-//                        weight.getIngredient().getQuantities())
-                        ))
+                        weight.getWeight()))
                 .collect(Collectors.toList());
         this.quantities = recipe
                 .getNutrientQuantities()

@@ -31,22 +31,4 @@ public class Norm {
 
     @ManyToOne
     private Nutrient nutrient;
-
-
-//    @ManyToOne
-//    private Sex sex;
-//
-//    @ManyToOne
-//    private Age age;
-//
-//    @ManyToOne
-//    private Type type;
-//
-//    @ManyToOne
-//    private PersonWeight weight;
-//
-//    @ManyToOne
-//    private Nutrient nutrient;
-//
-//    private int quantity;
 }

@@ -12,6 +12,7 @@ public class TokenBuilderService {
     public String createToken(Authentication authResult) {
         return Jwts.builder()
                 .setSubject(authResult.getName())
+//                додати час життя токена
 //                .setExpiration(new Date(System.currentTimeMillis() + 5_000))
                 .signWith(SignatureAlgorithm.HS512, "ukraine".getBytes())
                 .compact();

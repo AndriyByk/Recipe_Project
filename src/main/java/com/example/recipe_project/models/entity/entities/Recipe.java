@@ -55,27 +55,7 @@ public class Recipe {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
     private List<Comment> comments;
 
-//    public Recipe(String image, String title, String description, RecipeCategory recipeCategory, List<Weight> weights) {
-//        this.image = image;
-//        this.title = title;
-//        this.description = description;
-////        this.rating = rating;
-//        this.recipeCategory = recipeCategory;
-//        this.weights = weights;
-//    }
-
-//    public Recipe(String image, String title, String description, RecipeCategory recipeCategory, List<Weight> weights, User user, List<Rank> ranks) {
-//        this.image = image;
-//        this.title = title;
-//        this.description = description;
-////        this.rating = rating;
-//        this.recipeCategory = recipeCategory;
-//        this.weights = weights;
-//        this.user = user;
-//        this.ranks = ranks;
-//    }
-
-    public Recipe(String image, String title, String description, String dateOfCreation, double rating, Status status, RecipeCategory category, List<Weight> weights, User author, List<NutrientQuantityInRecipe> nutrientQuantities, List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram) {
+    public Recipe(String image, String title, String description, String dateOfCreation, double rating, Status status, RecipeCategory category, List<Weight> weights, User author, List<NutrientQuantityInRecipe> nutrientQuantities, List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram, List<Comment> comments) {
         this.image = image;
         this.title = title;
         this.description = description;
@@ -84,26 +64,11 @@ public class Recipe {
         this.status = status;
         this.category = category;
         this.weights = weights;
-        // ЗРОБЛЕНО! юзера треба скомпонувати з фронтом - має входити той юзер, який зараз авторизований
         this.author = author;
-
-        // при створенні рецепта, рейтингів ще не має
-//        this.ranks = ranks;
         this.nutrientQuantities = nutrientQuantities;
         this.nutrientQuantitiesPer100Gram = nutrientQuantitiesPer100Gram;
+        this.comments = comments;
     }
 
-//    public Recipe(String image, String title, String description, RecipeCategory category, List<Weight> weights, User author, List<User> users, List<NutrientQuantityInRecipe> nutrientQuantities) {
-//        this.image = image;
-//        this.title = title;
-//        this.description = description;
-//        this.category = category;
-//        this.weights = weights;
-//        // ЗРОБЛЕНО! юзера треба скомпонувати з фронтом - має входити той юзер, який зараз авторизований
-//        this.author = author;
-////        this.userFavorite = users;
-//        // при створенні рецепта, рейтингів ще не має
-////        this.ranks = ranks;
-//        this.nutrientQuantities = nutrientQuantities;
-//    }
+
 }

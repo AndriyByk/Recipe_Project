@@ -22,7 +22,6 @@ public class User_DTO {
     private String username;
     private String password;
     private List<String> roles;
-    // фотка для відображення на фронті
     private String avatar;
     private String email;
     private int weight;
@@ -33,13 +32,9 @@ public class User_DTO {
     private String name;
     private String lastName;
     private String dateOfRegistration;
-//    private List<Recipe_DTO> favoriteRecipes;
-//    private List<Recipe_DTO> createdRecipes;
-
     private List<Integer> favoriteRecipes;
     private List<Integer> createdRecipes;
     private List<UserNorm_DTO> userNorms;
-
 
     public User_DTO(User user) {
         this.id = user.getId();

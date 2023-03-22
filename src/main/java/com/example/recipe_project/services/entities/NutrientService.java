@@ -87,16 +87,12 @@ public class NutrientService {
         }
     }
 
-    /////////////////////////////////////
-
     public ResponseEntity<List<NutrientCategory_DTO>> findAllNutrientCategories() {
         return new ResponseEntity<>(nutrientCategoryDAO.findAll()
                 .stream()
                 .map(NutrientCategory_DTO::new)
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
-
-    /////////////////////////////////////
 
     public ResponseEntity<List<Nutrient_DTO>> findNutrientsByCategory(int id,
                                                                       int pageNumber,

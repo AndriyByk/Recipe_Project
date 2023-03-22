@@ -36,7 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeHttpRequests()
 
-                //  після методу get можна перелічити урли через кому
                 //  будь-яка url: "/*"
                 // ----------permitAll()-----------
                 .antMatchers(HttpMethod.GET,
@@ -75,12 +74,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,
                         "/recipes/{username}").hasAnyRole("USER","ADMIN","ADMIN_SUPER")
 
-                // -----------hasAnyRole("ADMIN")---------
+                // -----------hasRole("ADMIN")---------
                 .antMatchers(HttpMethod.GET, "cabinet/admin").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/allRecipes/admin-mode/{pageNumber}").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/find-and-sort/admin-mode/{pageNumber}").hasRole("ADMIN")
 
-                // -----------hasAnyRole("ADMIN_SUPER")---------
+                // -----------hasRole("ADMIN_SUPER")---------
                 .antMatchers(HttpMethod.GET, "cabinet/admin-super").hasRole("ADMIN_SUPER")
 
                 // hand-made фільтрація.
@@ -102,11 +101,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // ---5---
     // не працює
+    // якщо не закоментовано - блокує доступ
     @Override
     public void configure(WebSecurity web) {
 //        щоб preflight options request не перекривав наші запити
 //        web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
-        // якщо не закоментовано - блокує доступ
     }
 
     // ---2---
