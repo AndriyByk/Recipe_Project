@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "hub_users")
 public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -135,24 +135,25 @@ public class UserService implements UserDetailsService {
         if (user != null) {
             RawUpdatedUser newUser = new ObjectMapper().readValue(user, RawUpdatedUser.class);
             User userFromDB = userDAO.findByUsername(username);
-            if (avatar != null) {
-                String path =
-                        System.getProperty("user.home") + File.separator
-                                + "IdeaProjects" + File.separator
-                                + "Recipe_Project" + File.separator
-                                + "src" + File.separator
-                                + "main" + File.separator
-                                + "java" + File.separator
-                                + "com" + File.separator
-                                + "example" + File.separator
-                                + "recipe_project" + File.separator
-                                + "pictures" + File.separator
-                                + "users" + File.separator;
-                String pathOfUserDir = path + username;
-                new File(pathOfUserDir + File.separator + userFromDB.getAvatar()).delete();
-                userFromDB.setAvatar(avatar.getOriginalFilename());
-                avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
-            }
+            // закоментовано для [deploy to heroku. avoiding using pictures]
+//            if (avatar != null) {
+//                String path =
+//                        System.getProperty("user.home") + File.separator
+//                                + "IdeaProjects" + File.separator
+//                                + "Recipe_Project" + File.separator
+//                                + "src" + File.separator
+//                                + "main" + File.separator
+//                                + "java" + File.separator
+//                                + "com" + File.separator
+//                                + "example" + File.separator
+//                                + "recipe_project" + File.separator
+//                                + "pictures" + File.separator
+//                                + "users" + File.separator;
+//                String pathOfUserDir = path + username;
+//                new File(pathOfUserDir + File.separator + userFromDB.getAvatar()).delete();
+//                userFromDB.setAvatar(avatar.getOriginalFilename());
+//                avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
+//            }
 
             if (userDAO.findAll().stream().noneMatch(userDAO -> userDAO.getUsername().equals(username))) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -200,25 +201,26 @@ public class UserService implements UserDetailsService {
         if (user != null) {
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);
 
+            // закоментовано для [deploy to heroku. avoiding using pictures]
             // збереження картинки
-            String path =
-                    System.getProperty("user.home") + File.separator
-                            + "IdeaProjects" + File.separator
-                            + "Recipe_Project" + File.separator
-                            + "src" + File.separator
-                            + "main" + File.separator
-                            + "java" + File.separator
-                            + "com" + File.separator
-                            + "example" + File.separator
-                            + "recipe_project" + File.separator
-                            + "pictures" + File.separator
-                            + "users" + File.separator;
-
-            String pathOfUserDir = path + rawUser.getUsername();
-
-            if (new File(pathOfUserDir).mkdir()) {
-                avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
-            }
+//                String path =
+//                        System.getProperty("user.home") + File.separator
+//                                + "IdeaProjects" + File.separator
+//                                + "Recipe_Project" + File.separator
+//                                + "src" + File.separator
+//                                + "main" + File.separator
+//                                + "java" + File.separator
+//                                + "com" + File.separator
+//                                + "example" + File.separator
+//                                + "recipe_project" + File.separator
+//                                + "pictures" + File.separator
+//                                + "users" + File.separator;
+//
+//                String pathOfUserDir = path + rawUser.getUsername();
+//
+//                if (new File(pathOfUserDir).mkdir()) {
+//                    avatar.transferTo(new File(pathOfUserDir + File.separator + avatar.getOriginalFilename()));
+//                }
 
 
             User userForDB = new User(
@@ -226,7 +228,9 @@ public class UserService implements UserDetailsService {
                     // закодовка пароля
                     passwordEncoder.encode(rawUser.getPassword()),
                     new ArrayList<>(),
-                    avatar.getOriginalFilename(),
+                    // закоментовано для [deploy to heroku. avoiding using pictures]
+//                    avatar.getOriginalFilename(),
+                    "avatar.jpg",
                     rawUser.getEmail(),
                     rawUser.getWeight(),
                     rawUser.getHeight(),
@@ -262,36 +266,33 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<List<User_DTO>> deleteUserById(int id) {
         if (userDAO.findAll().stream().anyMatch(recipeDAO -> recipeDAO.getId() == id)) {
 
-            User user = userDAO.findById(id).get();
-            String path = System.getProperty("user.home") + File.separator
-                    + "IdeaProjects" + File.separator
-                    + "Recipe_Project" + File.separator
-                    + "src" + File.separator
-                    + "main" + File.separator
-                    + "java" + File.separator
-                    + "com" + File.separator
-                    + "example" + File.separator
-                    + "recipe_project" + File.separator
-                    + "pictures" + File.separator
-                    + "users" + File.separator
-                    + user.getUsername();
-            File file = new File(path + "/" + user.getAvatar());
-            if (file.exists()) {
-                file.delete();
-                File directory = new File(path);
-                if (directory.exists()) {
-                    directory.delete();
-                }
-            }
+            // закоментовано для [deploy to heroku. avoiding using pictures]
+//            User user = userDAO.findById(id).get();
+//            String path = System.getProperty("user.home") + File.separator
+//                    + "IdeaProjects" + File.separator
+//                    + "Recipe_Project" + File.separator
+//                    + "src" + File.separator
+//                    + "main" + File.separator
+//                    + "java" + File.separator
+//                    + "com" + File.separator
+//                    + "example" + File.separator
+//                    + "recipe_project" + File.separator
+//                    + "pictures" + File.separator
+//                    + "users" + File.separator
+//                    + user.getUsername();
+//            File file = new File(path + "/" + user.getAvatar());
+//            if (file.exists()) {
+//                file.delete();
+//                File directory = new File(path);
+//                if (directory.exists()) {
+//                    directory.delete();
+//                }
+//            }
 
             userDAO.deleteById(id);
-
-
             return new ResponseEntity<>(userDAO.findAll().stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.OK);
         } else {
-
-
             return new ResponseEntity<>(userDAO.findAll().stream().map(User_DTO::new)
                     .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
         }

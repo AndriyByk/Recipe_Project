@@ -86,13 +86,14 @@ public class RecipeService {
             // якщо рецепт оновлюється користувачем, його ще має схвалити адмін, тож іде в список до UNCHECKED
             recipeFromDB.setStatus(Status.UNCHECKED);
 
-            if (picture != null) {
-                // збереження картинки
-                String pathOfRecipeDir = getPathOfRecipeDir(recipeFromDB.getDateOfCreation());
-                new File(pathOfRecipeDir + File.separator + recipeFromDB.getImage()).delete();
-                recipeFromDB.setImage(picture.getOriginalFilename());
-                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
-            }
+            // закоментовано для [deploy to heroku. avoiding using pictures]
+//            if (picture != null) {
+//                // збереження картинки
+//                String pathOfRecipeDir = getPathOfRecipeDir(recipeFromDB.getDateOfCreation());
+//                new File(pathOfRecipeDir + File.separator + recipeFromDB.getImage()).delete();
+//                recipeFromDB.setImage(picture.getOriginalFilename());
+//                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
+//            }
 
             if (recipeDAO.findAll().stream().allMatch(recipeDAO -> recipeDAO.getId() != id)) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -159,11 +160,12 @@ public class RecipeService {
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
 
             // збереження картинки
-            // rawRecipe.getDateOfCreation(): format = dd-MM-yyyy_ss-mm-HH
-            String pathOfRecipeDir = getPathOfRecipeDir(rawRecipe.getDateOfCreation());
-            if (new File(pathOfRecipeDir).mkdir()) {
-                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
-            }
+            // закоментовано для [deploy to heroku. avoiding using pictures]
+//            // rawRecipe.getDateOfCreation(): format = dd-MM-yyyy_ss-mm-HH
+//            String pathOfRecipeDir = getPathOfRecipeDir(rawRecipe.getDateOfCreation());
+//            if (new File(pathOfRecipeDir).mkdir()) {
+//                picture.transferTo(new File(pathOfRecipeDir + File.separator + picture.getOriginalFilename()));
+//            }
 
             // пусті листи для:
             // 1) для кількості нутрієнтів в рецепті
@@ -177,7 +179,8 @@ public class RecipeService {
 
             // РЕЦЕПТ для бази
             Recipe recipeForDB = new Recipe(
-                    picture.getOriginalFilename(),
+//                    picture.getOriginalFilename(),
+                    "recipe.jpg",
                     rawRecipe.getTitle(),
                     rawRecipe.getDescription(),
                     rawRecipe.getDateOfCreation(),
@@ -267,6 +270,7 @@ public class RecipeService {
 
     // DELETE
    public ResponseEntity<List<Recipe_DTO>> deleteRecipe(int id, int pageNumber, int pageSize) {
+//        ще треба добавити видалення фото і папки з фото рецепту як це в UserService
         if (recipeDAO.findAll().stream().anyMatch(recipe -> recipe.getId() == id)) {
             recipeDAO.deleteById(id);
             return new ResponseEntity<>(recipeDAO
