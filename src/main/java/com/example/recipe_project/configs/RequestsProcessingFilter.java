@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RequestsProcessingFilter extends GenericFilterBean {
-    private AuthTokenDAO authTokenDAO;
+    private final AuthTokenDAO authTokenDAO;
 
     public RequestsProcessingFilter(AuthTokenDAO authTokenDAO) {
         this.authTokenDAO = authTokenDAO;

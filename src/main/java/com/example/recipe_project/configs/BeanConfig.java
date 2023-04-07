@@ -43,7 +43,7 @@ public class BeanConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         // з яких серверів можна робити запити на бек
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:3000"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:3000", "https://recipe-hub-frontend.herokuapp.com"));
         // доступні всі хедери
         corsConfiguration.addAllowedHeader("*");
         // якими методами можемо робити запити
