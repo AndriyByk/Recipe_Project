@@ -20,13 +20,13 @@ import java.util.List;
 public class UserController {
     private UserService userService;
 
-    @GetMapping("/users/{pageNumber}")
-    public ResponseEntity<List<User_DTO>> findAllUsers(
-            @PathVariable int pageNumber,
-            @RequestParam(required = false) int pageSize
-    ) {
-        return userService.findAllUsers(pageNumber, pageSize);
-    }
+//    @GetMapping("/users/{pageNumber}")
+//    public ResponseEntity<List<User_DTO>> findAllUsers(
+//            @PathVariable int pageNumber,
+//            @RequestParam(required = false) int pageSize
+//    ) {
+//        return userService.findAllUsers(pageNumber, pageSize);
+//    }
 
     @GetMapping("/users/chosen/{pageNumber}")
     public ResponseEntity<WrapperForUsers_DTO> findChosenUsers(

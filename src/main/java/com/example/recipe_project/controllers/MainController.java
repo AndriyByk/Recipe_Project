@@ -20,13 +20,11 @@ public class MainController {
     private TokenService tokenService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<List<User_DTO>> saveUser(
+    public ResponseEntity<String> saveUser(
             @RequestParam String user,
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize,
             @RequestParam(required = false) MultipartFile avatar
     ) throws IOException {
-        return userService.saveUser(user, avatar, pageNumber, pageSize);
+        return userService.saveUser(user, avatar);
     }
 
     @PostMapping("/sign-in")

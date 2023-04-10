@@ -196,7 +196,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<List<User_DTO>> saveUser(String user, MultipartFile avatar, int pageNumber, int pageSize) throws IOException {
+    public ResponseEntity<String> saveUser(String user, MultipartFile avatar) throws IOException {
 
         if (user != null) {
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);
@@ -249,13 +249,9 @@ public class UserService implements UserDetailsService {
 
             userDAO.save(userForDB);
 
-            return new ResponseEntity<>(userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                    .stream().map(User_DTO::new)
-                    .collect(Collectors.toList()), HttpStatus.OK);
+            return new ResponseEntity<>("Ok", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(userDAO.findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                    .stream().map(User_DTO::new)
-                    .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("BadRequest", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -344,7 +340,9 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity<User_DTO> calculateNorms(String username) {
         User user = userDAO.findByUsername(username);
-
+        if (user.getNorms().size() != 0) {
+            return new ResponseEntity<>(new User_DTO(user), HttpStatus.OK);
+        }
         // age
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date1 = LocalDate.parse(user.getDayOfBirth(), formatter);

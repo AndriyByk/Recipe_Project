@@ -35,9 +35,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 //  будь-яка url: "/*"
 
+
                 // ----------permitAll()-----------
+                // GET
                 .antMatchers(HttpMethod.GET,
-                        "/users",
+//                        "/users",
                         "/user/{id}",
                         "/users/activity-types",
                         "/users/genders",
@@ -46,14 +48,16 @@ public class SecurityConfig {
                         "/recipes/find-and-sort/{pageNumber}",
                         "/recipes/categories",
                         "/ingredients",
-                        "/ingredients/{id}",
+//                        "/ingredients/{id}",
                         "/ingredients/categories",
                         "/nutrients",
-                        "/nutrients/{id}",
+//                        "/nutrients/{id}",
                         "/nutrients/categories").permitAll()
+                // POST
                 .antMatchers(HttpMethod.POST,
                         "/sign-up",
                         "/sign-in").permitAll()
+
 
                 // -----------hasAnyRole("USER")---------
                 // ролі записуються без "ROLE_***"
@@ -72,13 +76,22 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST,
                         "/recipes/{username}").hasAnyRole("USER","ADMIN","ADMIN_SUPER")
 
+
                 // -----------hasRole("ADMIN")---------
-                .antMatchers(HttpMethod.GET, "cabinet/admin").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/allRecipes/admin-mode/{pageNumber}").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/find-and-sort/admin-mode/{pageNumber}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET,
+                        "/allRecipes/admin-mode/{pageNumber}",
+                        "/recipes/find-and-sort/admin-mode/{pageNumber}").hasRole("ADMIN")
+
 
                 // -----------hasRole("ADMIN_SUPER")---------
-                .antMatchers(HttpMethod.GET, "cabinet/admin-super").hasRole("ADMIN_SUPER")
+                // GET
+                .antMatchers(HttpMethod.GET,
+                        "/users/chosen/{pageNumber}").hasRole("ADMIN_SUPER")
+                // PATCH
+                .antMatchers(HttpMethod.PATCH,
+                        "/users/{userId}").hasRole("ADMIN_SUPER")
+
+
                 // hand-made фільтрація.
                 // Щоб збудувався токен, який ми зможемо надалі передавати в різні запити (будується лише раз)
                 // то треба хоча б раз, щоб спрацював оцей фільтр (саме тут будується латентний токен)
