@@ -115,19 +115,19 @@ public class RecipeController {
     @PatchMapping("/{id}")
     public ResponseEntity<Recipe_DTO> updateRecipe(
             @PathVariable int id,
-            @RequestParam String recipe,
-            @RequestParam(required = false) MultipartFile picture
+            @RequestParam String recipe
+//            @RequestParam(required = false) MultipartFile picture
     ) throws IOException {
-        return recipeService.updateRecipe(id, recipe, picture);
+        return recipeService.updateRecipe(id, recipe);
     }
 
     @PostMapping("/{username}")
     public ResponseEntity<Recipe_DTO> saveRecipe(
             @RequestParam String recipe,
-            @PathVariable String username,
-            @RequestParam(required = false) MultipartFile picture
+            @PathVariable String username
+//            @RequestParam(required = false) MultipartFile picture
     ) throws IOException {
-        return recipeService.saveRecipe(recipe, picture, username);
+        return recipeService.saveRecipe(recipe, username);
     }
 
     @DeleteMapping("/{id}")

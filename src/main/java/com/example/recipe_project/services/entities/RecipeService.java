@@ -78,7 +78,7 @@ public class RecipeService {
     }
 
     // PATCH
-    public ResponseEntity<Recipe_DTO> updateRecipe(int id, String recipe, MultipartFile picture) throws IOException {
+    public ResponseEntity<Recipe_DTO> updateRecipe(int id, String recipe) throws IOException {
         if (recipe != null) {
             RawUpdatedRecipe rawUpdatedRecipe = new ObjectMapper().readValue(recipe, RawUpdatedRecipe.class);
             Recipe recipeFromDB = recipeDAO.findById(id).get();
@@ -155,7 +155,7 @@ public class RecipeService {
     }
 
     // POST
-    public ResponseEntity<Recipe_DTO> saveRecipe(String recipe, MultipartFile picture, String username) throws IOException {
+    public ResponseEntity<Recipe_DTO> saveRecipe(String recipe, String username) throws IOException {
         if (recipe != null) {
             RawRecipe rawRecipe = new ObjectMapper().readValue(recipe, RawRecipe.class);
 
@@ -271,6 +271,7 @@ public class RecipeService {
     // DELETE
    public ResponseEntity<List<Recipe_DTO>> deleteRecipe(int id, int pageNumber, int pageSize) {
 //        ще треба добавити видалення фото і папки з фото рецепту як це в UserService
+       // з обрізаними картинками - необов'язково
         if (recipeDAO.findAll().stream().anyMatch(recipe -> recipe.getId() == id)) {
             recipeDAO.deleteById(id);
             return new ResponseEntity<>(recipeDAO

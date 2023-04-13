@@ -21,10 +21,10 @@ public class MainController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<String> saveUser(
-            @RequestParam String user,
-            @RequestParam(required = false) MultipartFile avatar
+            @RequestParam String user
+//            @RequestParam(required = false) MultipartFile avatar
     ) throws IOException {
-        return userService.saveUser(user, avatar);
+        return userService.saveUser(user);
     }
 
     @PostMapping("/sign-in")

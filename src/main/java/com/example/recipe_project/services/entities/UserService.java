@@ -53,13 +53,13 @@ public class UserService implements UserDetailsService {
     private ITypeDAO typeDAO;
     private IRankDAO rankDAO;
 
-    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
-        List<User_DTO> allUsers_dto = userDAO
-                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                .stream().map(User_DTO::new)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
-    }
+//    public ResponseEntity<List<User_DTO>> findAllUsers(int pageNumber, int pageSize) {
+//        List<User_DTO> allUsers_dto = userDAO
+//                .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
+//                .stream().map(User_DTO::new)
+//                .collect(Collectors.toList());
+//        return new ResponseEntity<>(allUsers_dto, HttpStatus.OK);
+//    }
 
     public ResponseEntity<WrapperForUsers_DTO> findChosenUsers(int pageNumber, int pageSize, String username, int role) {
 
@@ -131,7 +131,7 @@ public class UserService implements UserDetailsService {
         return new ResponseEntity<>(new UserShort_DTO(user), HttpStatus.OK);
     }
 
-    public ResponseEntity<User_DTO> updateUserByUsername(String user, MultipartFile avatar, String username) throws IOException {
+    public ResponseEntity<User_DTO> updateUserByUsername(String user, String username) throws IOException {
         if (user != null) {
             RawUpdatedUser newUser = new ObjectMapper().readValue(user, RawUpdatedUser.class);
             User userFromDB = userDAO.findByUsername(username);
@@ -196,7 +196,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<String> saveUser(String user, MultipartFile avatar) throws IOException {
+    public ResponseEntity<String> saveUser(String user) throws IOException {
 
         if (user != null) {
             RawUser rawUser = new ObjectMapper().readValue(user, RawUser.class);

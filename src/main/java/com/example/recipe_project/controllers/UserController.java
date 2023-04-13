@@ -72,9 +72,9 @@ public class UserController {
     @PatchMapping("/user/{username}")
     public ResponseEntity<User_DTO> updateUserByUsername(
             @RequestParam String user,
-            @RequestParam(required = false) MultipartFile avatar,
+//            @RequestParam(required = false) MultipartFile avatar,
             @PathVariable String username) throws IOException {
-        return userService.updateUserByUsername(user, avatar, username);
+        return userService.updateUserByUsername(user, username);
     }
 
     @PatchMapping("/users/update/{username}")
