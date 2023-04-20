@@ -131,12 +131,10 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<List<Recipe_DTO>> deleteRecipe(
-            @PathVariable int id,
-            @RequestParam(required = false) int pageNumber,
-            @RequestParam(required = false) int pageSize
+    public ResponseEntity<String> deleteRecipe(
+            @PathVariable int id
     ) {
-        return recipeService.deleteRecipe(id, pageNumber, pageSize);
+        return recipeService.deleteRecipe(id);
     }
 
     @GetMapping("/categories")

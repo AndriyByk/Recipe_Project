@@ -269,21 +269,14 @@ public class RecipeService {
     }
 
     // DELETE
-   public ResponseEntity<List<Recipe_DTO>> deleteRecipe(int id, int pageNumber, int pageSize) {
+   public ResponseEntity<String> deleteRecipe(int id) {
 //        ще треба добавити видалення фото і папки з фото рецепту як це в UserService
        // з обрізаними картинками - необов'язково
         if (recipeDAO.findAll().stream().anyMatch(recipe -> recipe.getId() == id)) {
             recipeDAO.deleteById(id);
-            return new ResponseEntity<>(recipeDAO
-                    .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                    .stream()
-                    .map(Recipe_DTO::new).collect(Collectors.toList()), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(recipeDAO
-                    .findAll(PageRequest.of(pageNumber, pageSize)).getContent()
-                    .stream()
-                    .map(Recipe_DTO::new)
-                    .collect(Collectors.toList()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

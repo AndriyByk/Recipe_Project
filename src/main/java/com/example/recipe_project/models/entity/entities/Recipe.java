@@ -33,7 +33,7 @@ public class Recipe {
             orphanRemoval = true)
     private List<Weight> weights;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User author;
 
     @OneToMany(cascade = CascadeType.ALL,
@@ -46,13 +46,19 @@ public class Recipe {
             orphanRemoval = true)
     private List<Ranking> rankings = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "recipe",
+            orphanRemoval = true)
     private List<NutrientQuantityInRecipe> nutrientQuantities;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "recipe",
+            orphanRemoval = true)
     private List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy = "recipe",
+            orphanRemoval = true)
     private List<Comment> comments;
 
     public Recipe(String image, String title, String description, String dateOfCreation, double rating, Status status, RecipeCategory category, List<Weight> weights, User author, List<NutrientQuantityInRecipe> nutrientQuantities, List<NutrientQuantityInRecipePer100Gramm> nutrientQuantitiesPer100Gram, List<Comment> comments) {

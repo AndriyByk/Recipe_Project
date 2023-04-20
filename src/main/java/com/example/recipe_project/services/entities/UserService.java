@@ -249,9 +249,9 @@ public class UserService implements UserDetailsService {
 
             userDAO.save(userForDB);
 
-            return new ResponseEntity<>("Ok", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("BadRequest", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
